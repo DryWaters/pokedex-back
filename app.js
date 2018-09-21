@@ -21,6 +21,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-utils.rebuildData();
+if (process.env.REBUILD_DATA && process.env.REBUILD_DATA === 'TRUE') {
+  utils.rebuildData();
+}
 
 module.exports = app;
