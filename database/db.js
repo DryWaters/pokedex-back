@@ -3,7 +3,7 @@
 const pgp = require('pg-promise')();
 let db;
 
-if (process.env.LOCAL === 'TRUE') {
+if (process.env.LOCAL && process.env.LOCAL === 'TRUE') {
   connectionDetails = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
