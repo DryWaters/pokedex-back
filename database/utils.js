@@ -27,6 +27,7 @@ const rebuildData = () => {
           }
         ))
         .on('end', () => {
+          console.log('Done reading pokemone data');
           db.tx(trans => {
             const queries = pokemonData.map(row => {
               return trans.none('INSERT INTO pokemon(pokemon_id, name, image_id) VALUES($1, $2, $3)', [row.pokemon_id, row.name, row.image_id]);
