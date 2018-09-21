@@ -13,7 +13,7 @@ if (process.env.LOCAL && process.env.LOCAL === 'TRUE') {
   }
   db = pgp(connectionDetails);
 } else {
-  pgp(process.env.DATABASE_URL);
+  db = pgp(process.env.DATABASE_URL);
 }
 
 console.log(process.env.DATABASE_URL);
