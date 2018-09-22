@@ -1,4 +1,4 @@
-const db = require('./db');
+const database = require('./db');
 const fs = require('fs');
 const csv = require('csv-parser');
 
@@ -18,23 +18,24 @@ const rebuildData = () => {
 
 // Drops all tables if they exist
 const clearDatabase = () => {
-  return db.none('DROP TABLE IF EXISTS public.images')
-      .then(() => db.none('DROP TABLE IF EXISTS public.types'))
-      .then(() => db.none('DROP TABLE IF EXISTS public.pokemon_types'))
-      .then(() => db.none('DROP TABLE IF EXISTS public.pokemon'));
+  return database.db.none('DROP TABLE IF EXISTS public.images')
+      .then(() => database.db.none('DROP TABLE IF EXISTS public.types'))
+      .then(() => database.db.none('DROP TABLE IF EXISTS public.pokemon_types'))
+      .then(() => database.db.none('DROP TABLE IF EXISTS public.pokemon'));
 };
 
 // Create all tables and primary keys
 const createTables = () => {
-  return db.none('CREATE TABLE public.pokemon_types (pokemon_id INTEGER,' +
-    ' type_id INTEGER, slot INTEGER, CONSTRAINT pokemon_types_pkey PRIMARY ' +
-    ' KEY (pokemon_id, slot))')
-      .then(() => db.none('CREATE TABLE public.types (type_id INTEGER ' +
-        'PRIMARY KEY, name CHARACTER VARYING(50))'))
-      .then(() => db.none('CREATE TABLE public.pokemon (pokemon_id INTEGER ' +
-        'PRIMARY KEY, name CHARACTER VARYING(50), image_id INTEGER UNIQUE)'))
-      .then(() => db.none('CREATE TABLE public.images (image_id INTEGER ' +
-        'PRIMARY KEY, image_path CHARACTER VARYING(255))'));
+  return database.db.none('CREATE TABLE public.pokemon_types (pokemon_id ' +
+    ' INTEGER, type_id INTEGER, slot INTEGER, CONSTRAINT pokemon_types_pkey ' +
+    ' PRIMARY KEY (pokemon_id, slot))')
+      .then(() => database.db.none('CREATE TABLE public.types (type_id ' +
+        ' INTEGER PRIMARY KEY, name CHARACTER VARYING(50))'))
+      .then(() => database.db.none('CREATE TABLE public.pokemon ' +
+        ' (pokemon_id INTEGER PRIMARY KEY, name CHARACTER VARYING(50), ' +
+        ' image_id INTEGER UNIQUE)'))
+      .then(() => database.db.none('CREATE TABLE public.images (image_id ' +
+        ' INTEGER PRIMARY KEY, image_path CHARACTER VARYING(255))'));
 };
 
 /* Loads all pokemon data from CSV file expected to be in location is
@@ -54,7 +55,7 @@ const loadPokemonData = () => {
             }
         ))
         .on('end', () => {
-          db.task((trans) => {
+          database.db.task((trans) => {
             const queries = pokemonData.map((row) => {
               return trans.none('INSERT INTO public.pokemon(pokemon_id, ' +
                 'name, image_id) VALUES($1, $2, $3)', [row.pokemon_id,
@@ -85,7 +86,7 @@ const loadImageData = () => {
             }
         ))
         .on('end', () => {
-          db.task((trans) => {
+          database.db.task((trans) => {
             const queries = imageData.map((row) => {
               return trans.none('INSERT INTO images(image_id, image_path) ' +
                 'VALUES($1, $2)', [row.image_id, '/sprites/pokemon/' +
@@ -113,7 +114,7 @@ const loadTypeData = () => {
             }
         ))
         .on('end', () => {
-          db.task((trans) => {
+          database.db.task((trans) => {
             const queries = typeData.map((row) => {
               return trans.none('INSERT INTO types(type_id, name) '+
                 'VALUES($1, $2)', [row.type_id, row.name]);
@@ -141,7 +142,7 @@ const loadPokemonTypeData = () => {
             }
         ))
         .on('end', () => {
-          db.task((trans) => {
+          database.db.task((trans) => {
             const queries = pokemonTypeData.map((row) => {
               return trans.none('INSERT INTO pokemon_types(pokemon_id, ' +
                 'type_id, slot) VALUES($1, $2, $3)', [row.pokemon_id,

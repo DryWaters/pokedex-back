@@ -1,9 +1,16 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router(); // eslint-disable-line new-cap
+// const db = require('../database/db');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', (req, res, next) => {
+  res.json({
+    'pokemon': {
+      'id': 0,
+      'name': 'Testmon',
+      'type': ['Ground', 'Sun'],
+    },
+  });
 });
 
 module.exports = router;
