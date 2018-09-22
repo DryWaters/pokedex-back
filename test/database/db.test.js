@@ -12,4 +12,4 @@ QUnit.test('Test local database is valid and can initialize', (assert) => {
   assert.ok(typeof db !== null);
 });
 
-QUnit.test('')
+QUnit.test('something else');
