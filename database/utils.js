@@ -58,10 +58,7 @@ const loadPokemonData = () => {
           const insert =
             database.pgp.helpers.insert(pokemonData, database.pokemonColumns);
           database.db.none(insert)
-              .then(() => {
-                console.log('done inserting pokemon data');
-                resolve();
-              })
+              .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
                  'load data into DB with error: ' + err);
@@ -93,10 +90,7 @@ const loadImageData = () => {
           const insert =
             database.pgp.helpers.insert(imageData, database.imageColumns);
           database.db.none(insert)
-              .then(() => {
-                console.log('done inserting image data');
-                resolve();
-              })
+              .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
                  'load data into DB with error: ' + err);
@@ -124,10 +118,7 @@ const loadTypeData = () => {
           const insert =
           database.pgp.helpers.insert(typeData, database.typeColumns);
           database.db.none(insert)
-              .then(() => {
-                console.log('done inserting type data');
-                resolve();
-              })
+              .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
                   'load data into DB with error: ' + err);
@@ -157,10 +148,7 @@ const loadPokemonTypeData = () => {
           database.pgp.helpers.insert(pokemonTypeData,
               database.pokemonTypeColumns);
           database.db.none(insert)
-              .then(() => {
-                console.log('done inserting pokemon type data');
-                resolve();
-              })
+              .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
                   'load data into DB with error: ' + err);

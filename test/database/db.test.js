@@ -40,5 +40,26 @@ QUnit.test('Local connection credientials are valid', (assert) => {
         assert.ok(false, 'Unable to make connection with error' + error);
         connectionDone();
       });
-  assert.ok(1 == 1);
+});
+
+QUnit.test('Test fail on bad credientials', (assert) => {
+  const badDetails = {
+    host: 'localhost',
+    port: 999,
+    database: 'database',
+    user: 'user',
+    password: 'fail',
+  };
+  const badDatabase = database.pgp(badDetails);
+  const connectionDone = assert.async();
+  badDatabase.connect()
+      .then((obj) => {
+        obj.done();
+        assert.ok(false, 'Should not connect!');
+        connectionDone();
+      })
+      .catch((error) => {
+        assert.ok(true, 'Should fail with error: ' + error);
+        connectionDone();
+      });
 });
