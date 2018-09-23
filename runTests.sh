@@ -1,5 +1,8 @@
 #!/usr/bin
-head -n 8 .env > .tmp
+if [ -e .env ]
+then
+	head -n 7 .env > .tmp
+fi
 echo -n 'DATABASE_URL=' >> .tmp && heroku config:get DATABASE_URL >> .tmp
 mv .tmp .env
 qunit

@@ -20,28 +20,6 @@ QUnit.test('Remote connection credentials are valid', (assert) => {
       });
 });
 
-QUnit.test('Local connection credientials are valid', (assert) => {
-  const connectionDetails = {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    database: process.env.DB_DATABASE,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-  };
-  const localDatabase = database.pgp(connectionDetails);
-  const connectionDone = assert.async();
-  localDatabase.connect()
-      .then((obj) => {
-        obj.done();
-        assert.ok(true, 'Connection can be made');
-        connectionDone();
-      })
-      .catch((error) => {
-        assert.ok(false, 'Unable to make connection with error' + error);
-        connectionDone();
-      });
-});
-
 QUnit.test('Test fail on bad credientials', (assert) => {
   const badDetails = {
     host: 'localhost',
