@@ -41,7 +41,3 @@ QUnit.test('Test fail on bad credientials', (assert) => {
         connectionDone();
       });
 });
-
-QUnit.test('Test fail!', (assert) => {
-  assert.ok(false);
-});
