@@ -19,7 +19,10 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 if (process.env.REBUILD_DATA && process.env.REBUILD_DATA === 'TRUE') {
-  utils.rebuildData();
+  utils.rebuildData()
+      .then(() => {
+        console.log('done setting up');
+      });
 }
 
 module.exports = app;

@@ -6,14 +6,14 @@ const csv = require('csv-parser');
  Uses promise chaining to complete each async task one after one another
  TODO:  Allow dynamic creation of definition from an object or array. */
 const rebuildData = () => {
-  clearDatabase()
+  return clearDatabase()
       .then(() => createTables())
       .then(() => loadPokemonData())
       .then(() => loadImageData())
       .then(() => loadTypeData())
       .then(() => loadPokemonTypeData())
       .catch((err) => console.log('Error creating database ' +
-        'with error: ' + err));
+      'with error: ' + err));
 };
 
 // Drops all tables if they exist
@@ -30,12 +30,12 @@ const createTables = () => {
     ' INTEGER, type_id INTEGER, slot INTEGER, CONSTRAINT pokemon_types_pkey ' +
     ' PRIMARY KEY (pokemon_id, slot))')
       .then(() => database.db.none('CREATE TABLE public.types (type_id ' +
-        ' INTEGER PRIMARY KEY, name CHARACTER VARYING(50))'))
+      ' INTEGER PRIMARY KEY, name CHARACTER VARYING(50))'))
       .then(() => database.db.none('CREATE TABLE public.pokemon ' +
-        ' (pokemon_id INTEGER PRIMARY KEY, name CHARACTER VARYING(50), ' +
-        ' image_id INTEGER UNIQUE)'))
+      ' (pokemon_id INTEGER PRIMARY KEY, name CHARACTER VARYING(50), ' +
+      ' image_id INTEGER UNIQUE)'))
       .then(() => database.db.none('CREATE TABLE public.images (image_id ' +
-        ' INTEGER PRIMARY KEY, image_path CHARACTER VARYING(255))'));
+      ' INTEGER PRIMARY KEY, image_path CHARACTER VARYING(255))'));
 };
 
 /* Loads all pokemon data from CSV file expected to be in location is
@@ -55,16 +55,25 @@ const loadPokemonData = () => {
             }
         ))
         .on('end', () => {
-          database.db.task((trans) => {
-            const queries = pokemonData.map((row) => {
-              return trans.none('INSERT INTO public.pokemon(pokemon_id, ' +
-                'name, image_id) VALUES($1, $2, $3)', [row.pokemon_id,
-                row.name, row.image_id]);
-            });
-            return trans.batch(queries);
-          });
-          resolve();
+          insertPokemonDataIntoDB(pokemonData)
+              .then(() => resolve())
+              .catch((err) => {
+                console.log('Unable to ' +
+                'load data into DB with error: ' + err);
+                reject();
+              });
         });
+  });
+};
+
+const insertPokemonDataIntoDB = (pokemonData) => {
+  return database.db.task((trans) => {
+    const queries = pokemonData.map((row) => {
+      return trans.none('INSERT INTO public.pokemon(pokemon_id, ' +
+        'name, image_id) VALUES($1, $2, $3)', [row.pokemon_id,
+        row.name, row.image_id]);
+    });
+    return trans.batch(queries);
   });
 };
 
@@ -86,16 +95,25 @@ const loadImageData = () => {
             }
         ))
         .on('end', () => {
-          database.db.task((trans) => {
-            const queries = imageData.map((row) => {
-              return trans.none('INSERT INTO images(image_id, image_path) ' +
-                'VALUES($1, $2)', [row.image_id, '/sprites/pokemon/' +
-                row.image_id + '.png']);
-            });
-            return trans.batch(queries);
-          });
-          resolve();
+          insertImageDataIntoDB(imageData)
+              .then(() => resolve())
+              .catch((err) => {
+                console.log('Unable to ' +
+                'load data into DB with error: ' + err);
+                reject();
+              });
         });
+  });
+};
+
+const insertImageDataIntoDB = (imageData) => {
+  return database.db.task((trans) => {
+    const queries = imageData.map((row) => {
+      return trans.none('INSERT INTO images(image_id, image_path) ' +
+      'VALUES($1, $2)', [row.image_id, '/sprites/pokemon/' +
+        row.image_id + '.png']);
+    });
+    return trans.batch(queries);
   });
 };
 
@@ -114,15 +132,24 @@ const loadTypeData = () => {
             }
         ))
         .on('end', () => {
-          database.db.task((trans) => {
-            const queries = typeData.map((row) => {
-              return trans.none('INSERT INTO types(type_id, name) '+
-                'VALUES($1, $2)', [row.type_id, row.name]);
-            });
-            return trans.batch(queries);
-          });
-          resolve();
+          insertTypeDataIntoDB(typeData)
+              .then(() => resolve())
+              .catch((err) => {
+                console.log('Unable to ' +
+                'load data into DB with error: ' + err);
+                reject();
+              });
         });
+  });
+};
+
+const insertTypeDataIntoDB = (typeData) => {
+  return database.db.task((trans) => {
+    const queries = typeData.map((row) => {
+      return trans.none('INSERT INTO types(type_id, name) ' +
+      'VALUES($1, $2)', [row.type_id, row.name]);
+    });
+    return trans.batch(queries);
   });
 };
 
@@ -142,16 +169,25 @@ const loadPokemonTypeData = () => {
             }
         ))
         .on('end', () => {
-          database.db.task((trans) => {
-            const queries = pokemonTypeData.map((row) => {
-              return trans.none('INSERT INTO pokemon_types(pokemon_id, ' +
-                'type_id, slot) VALUES($1, $2, $3)', [row.pokemon_id,
-                row.type_id, row.slot]);
-            });
-            return trans.batch(queries);
-          });
-          resolve();
+          insertPokemonTypeDataIntoDB(pokemonTypeData)
+              .then(() => resolve())
+              .catch((err) => {
+                console.log('Unable to ' +
+                'load data into DB with error: ' + err);
+                reject();
+              });
         });
+  });
+};
+
+const insertPokemonTypeDataIntoDB = (pokemonTypeData) => {
+  return database.db.task((trans) => {
+    const queries = pokemonTypeData.map((row) => {
+      return trans.none('INSERT INTO pokemon_types(pokemon_id, ' +
+      'type_id, slot) VALUES($1, $2, $3)', [row.pokemon_id,
+        row.type_id, row.slot]);
+    });
+    return trans.batch(queries);
   });
 };
 
@@ -166,3 +202,4 @@ module.exports = {
   loadTypeData,
   loadPokemonTypeData,
 };
+

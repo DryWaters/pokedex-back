@@ -1,19 +1,12 @@
 require('dotenv').config();
-
 const database = require('../../database/db');
 
-QUnit.module('Database Testing', {
-  after: () => {
-    // kill DB connection after tests
-    database.pgp.end();
-  },
-});
-
-QUnit.test('Test local database is valid and can initialize', (assert) => {
+QUnit.module('Database Testing');
+QUnit.test('Remote database is valid and can initialize', (assert) => {
   assert.ok(typeof database.db !== null);
 });
 
-QUnit.test('Test local connection credentials is valid', (assert) => {
+QUnit.test('Remote connection credentials are valid', (assert) => {
   const connectionDone = assert.async();
   database.db.connect()
       .then((obj) => {
@@ -27,10 +20,17 @@ QUnit.test('Test local connection credentials is valid', (assert) => {
       });
 });
 
-QUnit.test('Test remote connection credientials is valid', (assert) => {
-  const remoteDatabase = database.pgp(process.env.DATABASE_URL + '?ssl=true');
+QUnit.test('Local connection credientials are valid', (assert) => {
+  const connectionDetails = {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    database: process.env.DB_DATABASE,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+  };
+  const localDatabase = database.pgp(connectionDetails);
   const connectionDone = assert.async();
-  remoteDatabase.connect()
+  localDatabase.connect()
       .then((obj) => {
         obj.done();
         assert.ok(true, 'Connection can be made');
@@ -40,4 +40,5 @@ QUnit.test('Test remote connection credientials is valid', (assert) => {
         assert.ok(false, 'Unable to make connection with error' + error);
         connectionDone();
       });
+  assert.ok(1 == 1);
 });
