@@ -18,7 +18,33 @@ if (process.env.LOCAL && process.env.LOCAL === 'TRUE') {
   db = pgp(process.env.DATABASE_URL + '?ssl=true');
 }
 
+const pokemonColumns = new pgp.helpers.ColumnSet([
+  'pokemon_id',
+  'name',
+  'image_id',
+], {table: 'pokemon'});
+
+const imageColumns = new pgp.helpers.ColumnSet([
+  'image_id',
+  'image_path',
+], {table: 'images'});
+
+const typeColumns = new pgp.helpers.ColumnSet([
+  'type_id',
+  'name',
+], {table: 'types'});
+
+const pokemonTypeColumns = new pgp.helpers.ColumnSet([
+  'pokemon_id',
+  'type_id',
+  'slot',
+], {table: 'pokemon_types'});
+
 module.exports = {
   db,
   pgp,
+  pokemonColumns,
+  imageColumns,
+  typeColumns,
+  pokemonTypeColumns,
 };

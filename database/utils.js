@@ -55,25 +55,19 @@ const loadPokemonData = () => {
             }
         ))
         .on('end', () => {
-          insertPokemonDataIntoDB(pokemonData)
-              .then(() => resolve())
+          const insert =
+            database.pgp.helpers.insert(pokemonData, database.pokemonColumns);
+          database.db.none(insert)
+              .then(() => {
+                console.log('done inserting pokemon data');
+                resolve();
+              })
               .catch((err) => {
                 console.log('Unable to ' +
-                'load data into DB with error: ' + err);
+                 'load data into DB with error: ' + err);
                 reject();
               });
         });
-  });
-};
-
-const insertPokemonDataIntoDB = (pokemonData) => {
-  return database.db.task((trans) => {
-    const queries = pokemonData.map((row) => {
-      return trans.none('INSERT INTO public.pokemon(pokemon_id, ' +
-        'name, image_id) VALUES($1, $2, $3)', [row.pokemon_id,
-        row.name, row.image_id]);
-    });
-    return trans.batch(queries);
   });
 };
 
@@ -92,28 +86,23 @@ const loadImageData = () => {
         .on('data', (data) => imageData.push(
             {
               image_id: data.image_id,
+              image_path: data.image_id + '.png',
             }
         ))
         .on('end', () => {
-          insertImageDataIntoDB(imageData)
-              .then(() => resolve())
+          const insert =
+            database.pgp.helpers.insert(imageData, database.imageColumns);
+          database.db.none(insert)
+              .then(() => {
+                console.log('done inserting image data');
+                resolve();
+              })
               .catch((err) => {
                 console.log('Unable to ' +
-                'load data into DB with error: ' + err);
+                 'load data into DB with error: ' + err);
                 reject();
               });
         });
-  });
-};
-
-const insertImageDataIntoDB = (imageData) => {
-  return database.db.task((trans) => {
-    const queries = imageData.map((row) => {
-      return trans.none('INSERT INTO images(image_id, image_path) ' +
-      'VALUES($1, $2)', [row.image_id, '/sprites/pokemon/' +
-        row.image_id + '.png']);
-    });
-    return trans.batch(queries);
   });
 };
 
@@ -132,24 +121,19 @@ const loadTypeData = () => {
             }
         ))
         .on('end', () => {
-          insertTypeDataIntoDB(typeData)
-              .then(() => resolve())
+          const insert =
+          database.pgp.helpers.insert(typeData, database.typeColumns);
+          database.db.none(insert)
+              .then(() => {
+                console.log('done inserting type data');
+                resolve();
+              })
               .catch((err) => {
                 console.log('Unable to ' +
-                'load data into DB with error: ' + err);
+                  'load data into DB with error: ' + err);
                 reject();
               });
         });
-  });
-};
-
-const insertTypeDataIntoDB = (typeData) => {
-  return database.db.task((trans) => {
-    const queries = typeData.map((row) => {
-      return trans.none('INSERT INTO types(type_id, name) ' +
-      'VALUES($1, $2)', [row.type_id, row.name]);
-    });
-    return trans.batch(queries);
   });
 };
 
@@ -169,25 +153,20 @@ const loadPokemonTypeData = () => {
             }
         ))
         .on('end', () => {
-          insertPokemonTypeDataIntoDB(pokemonTypeData)
-              .then(() => resolve())
+          const insert =
+          database.pgp.helpers.insert(pokemonTypeData,
+              database.pokemonTypeColumns);
+          database.db.none(insert)
+              .then(() => {
+                console.log('done inserting pokemon type data');
+                resolve();
+              })
               .catch((err) => {
                 console.log('Unable to ' +
-                'load data into DB with error: ' + err);
+                  'load data into DB with error: ' + err);
                 reject();
               });
         });
-  });
-};
-
-const insertPokemonTypeDataIntoDB = (pokemonTypeData) => {
-  return database.db.task((trans) => {
-    const queries = pokemonTypeData.map((row) => {
-      return trans.none('INSERT INTO pokemon_types(pokemon_id, ' +
-      'type_id, slot) VALUES($1, $2, $3)', [row.pokemon_id,
-        row.type_id, row.slot]);
-    });
-    return trans.batch(queries);
   });
 };
 
