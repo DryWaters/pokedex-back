@@ -87,7 +87,7 @@ QUnit.test('Checks that pokemon data is loaded', (assert) => {
       })
       .then((result) => {
         asyncLoadPokemon();
-        assert.equal(result[0].count, '807', 'Lots of pokemon!');
+        assert.equal(result[0].count, '806', 'Lots of pokemon!');
       })
       .catch((err) => {
         asyncLoadPokemon();
@@ -113,7 +113,7 @@ QUnit.test('Checks that image data is loaded', (assert) => {
       })
       .then((result) => {
         asyncLoadImage();
-        assert.equal(result[0].count, '807', 'Lots of images!');
+        assert.equal(result[0].count, '806', 'Lots of images!');
       })
       .catch((err) => {
         asyncLoadImage();
@@ -165,7 +165,7 @@ QUnit.test('Checks that pokemon type data is loaded', (assert) => {
       })
       .then((result) => {
         asyncLoadPokemonTypes();
-        assert.equal(result[0].count, '1212', 'Lots of pokemon types!');
+        assert.equal(result[0].count, '1211', 'Lots of pokemon types!');
       })
       .catch((err) => {
         asyncLoadPokemonTypes();
