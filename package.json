@@ -3,12 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "nodemon ./bin/www",
     "test": "sh runTests.sh",
     "watch": "sh watchTests.sh"
   },
   "dependencies": {
-    "async": "^2.6.1",
     "cookie-parser": "~1.4.3",
     "csv-parser": "^1.12.1",
     "debug": "~2.6.9",
@@ -19,6 +18,8 @@
   },
   "devDependencies": {
     "eslint": "^5.6.0",
-    "eslint-config-google": "^0.10.0"
+    "eslint-config-google": "^0.10.0",
+    "nodemon": "^1.18.4",
+    "async": "^2.6.1"
   }
 }
