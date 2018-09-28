@@ -8,11 +8,15 @@ const utils = require('./database/utils');
 const pokemon = require('./routes/pokemon');
 const app = express();
 
+const favicon = require('serve-favicon');
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 app.use('/pokemon', pokemon);
 

@@ -15,7 +15,8 @@
     "dotenv": "^6.0.0",
     "express": "~4.16.0",
     "morgan": "~1.9.0",
-    "pg-promise": "^8.4.6"
+    "pg-promise": "^8.4.6",
+    "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
     "eslint": "^5.6.0",
