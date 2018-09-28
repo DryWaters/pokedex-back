@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "watch": "nodemon ./bin/www",
+    "watch-test": "sh watchTests.sh",
     "start": "node ./bin/www",
-    "test": "sh runTests.sh",
-    "watch": "sh watchTests.sh"
+    "test": "sh runTests.sh"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
@@ -21,6 +21,7 @@
     "eslint": "^5.6.0",
     "eslint-config-google": "^0.10.0",
     "nodemon": "^1.18.4",
-    "async": "^2.6.1"
+    "async": "^2.6.1",
+    "supertest": "^3.3.0"
   }
 }
