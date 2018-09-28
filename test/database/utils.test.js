@@ -7,11 +7,21 @@ QUnit.module('Database Util Testing', {
     const done = assert.async();
     utils.rebuildData()
         .then(() => {
-          console.log('done setting up');
           done();
         })
         .catch((error) => {
-          console.log('error');
+          console.err('error');
+          done();
+        });
+  },
+  after: (assert) => {
+    const done = assert.async();
+    utils.rebuildData()
+        .then(() => {
+          done();
+        })
+        .catch((error) => {
+          console.err('error');
           done();
         });
   },
