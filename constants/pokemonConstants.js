@@ -2,7 +2,7 @@ const NUMBER_OF_POKEMON = 806;
 const NUMBER_OF_TABLES = 4;
 const NUMBER_OF_TYPES = 18;
 const TOTAL_POKEMON_WITH_TYPES = 1211;
-const SPRITE_PATH = './sprites/pokemon/';
+const SPRITE_PATH = '/sprites/pokemon/';
 
 module.exports = {
   NUMBER_OF_POKEMON,
