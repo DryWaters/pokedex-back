@@ -34,6 +34,7 @@ QUnit.test('Test fail on bad credientials', (assert) => {
       .then((obj) => {
         obj.done();
         assert.ok(false, 'Should not connect!');
+        console.log('ok here');
         connectionDone();
       })
       .catch((error) => {

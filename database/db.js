@@ -15,7 +15,6 @@ if (process.env.LOCAL && process.env.LOCAL === 'TRUE') {
   };
   db = pgp(connectionDetails);
 } else {
-  // db = pgp(process.env.DATABASE_URL);
   db = pgp(process.env.DATABASE_URL + '?ssl=true');
 }
 
@@ -27,7 +26,8 @@ const pokemonColumns = new pgp.helpers.ColumnSet([
 
 const imageColumns = new pgp.helpers.ColumnSet([
   'image_id',
-  'image_path',
+  'small_image_path',
+  'large_image_path',
 ], {table: 'images'});
 
 const typeColumns = new pgp.helpers.ColumnSet([
