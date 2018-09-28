@@ -32,7 +32,7 @@ router.get('/', (req, res, next) => {
         });
   }
 
-  // Within range, get data from DB
+  // Within range, get data from DB and return parsed results
   database.db.any(
       'select pokemon.pokemon_id as id, pokemon.name, types.name as' +
     ' types_name, image_path from pokemon INNER JOIN images ON' +
@@ -41,13 +41,33 @@ router.get('/', (req, res, next) => {
     ' ON types.type_id = pokemon_types.type_id where pokemon.pokemon_id ' +
     ' >= $1 and pokemon.pokemon_id <= $2', [startingId, startingId + range - 1])
       .then((result) => {
-        console.log(result);
         return res.status(200).json(parsePokemonResults(result));
+      })
+      .catch((error) => {
+        console.error('Unable to process request with error: ' + error);
       });
 });
 
 const parsePokemonResults = (result) => {
-  return result;
+  const lookup = {};
+  const pokemon = [];
+  result.forEach((row) => {
+    if (!lookup.hasOwnProperty(row.id)) {
+      lookup[row.id] = pokemon.length;
+      pokemon.push({
+        id: row.id,
+        name: row.name,
+        types: [row.types_name],
+        image_path: {
+          small: row.image_path,
+          large: row.image_path,
+        },
+      });
+    } else {
+      pokemon[lookup[row.id]].types.push(row.types_name);
+    }
+  });
+  return {pokemon};
 };
 
 module.exports = router;
