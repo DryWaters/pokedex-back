@@ -1,5 +1,6 @@
 const utils = require('../../database/utils');
 const database = require('../../database/db');
+const POKEMON = require('../../constants/pokemonConstants');
 
 QUnit.module('Database Util Testing', {
   before: (assert) => {
@@ -26,7 +27,8 @@ QUnit.test('Checks that clears tables', (assert) => {
   database.db.any('SELECT COUNT(table_name) FROM information_schema.tables '+
   'WHERE table_schema=\'public\'')
       .then((result) => {
-        assert.equal(result[0].count, '4', 'Current number of tables is 4');
+        assert.equal(result[0].count, POKEMON.NUMBER_OF_TABLES,
+            'Current number of tables is 4');
         checkTableAmount();
         return utils.clearDatabase();
       })
@@ -61,7 +63,8 @@ QUnit.test('Checks that tables are created', (assert) => {
       })
       .then((result) => {
         asyncCreateTables();
-        assert.equal(result[0].count, '4', 'Created tables');
+        assert.equal(result[0].count, POKEMON.NUMBER_OF_TABLES,
+            'Created tables');
       })
       .catch((err) => {
         asyncCreateTables();
@@ -87,7 +90,8 @@ QUnit.test('Checks that pokemon data is loaded', (assert) => {
       })
       .then((result) => {
         asyncLoadPokemon();
-        assert.equal(result[0].count, '806', 'Lots of pokemon!');
+        assert.equal(result[0].count, POKEMON.NUMBER_OF_POKEMON,
+            'Lots of pokemon!');
       })
       .catch((err) => {
         asyncLoadPokemon();
@@ -113,7 +117,8 @@ QUnit.test('Checks that image data is loaded', (assert) => {
       })
       .then((result) => {
         asyncLoadImage();
-        assert.equal(result[0].count, '806', 'Lots of images!');
+        assert.equal(result[0].count, POKEMON.NUMBER_OF_POKEMON,
+            'Lots of images!');
       })
       .catch((err) => {
         asyncLoadImage();
@@ -139,7 +144,8 @@ QUnit.test('Checks that type data is loaded', (assert) => {
       })
       .then((result) => {
         asyncLoadTypes();
-        assert.equal(result[0].count, '18', 'Lots of types!');
+        assert.equal(result[0].count, POKEMON.NUMBER_OF_TYPES,
+            'Lots of types!');
       })
       .catch((err) => {
         asyncLoadTypes();
@@ -165,7 +171,8 @@ QUnit.test('Checks that pokemon type data is loaded', (assert) => {
       })
       .then((result) => {
         asyncLoadPokemonTypes();
-        assert.equal(result[0].count, '1211', 'Lots of pokemon types!');
+        assert.equal(result[0].count, POKEMON.TOTAL_POKEMON_WITH_TYPES,
+            'Lots of pokemon types!');
       })
       .catch((err) => {
         asyncLoadPokemonTypes();
