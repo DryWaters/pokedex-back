@@ -8,6 +8,7 @@
     "watch": "sh watchTests.sh"
   },
   "dependencies": {
+    "async": "^2.6.1",
     "cookie-parser": "~1.4.3",
     "csv-parser": "^1.12.1",
     "debug": "~2.6.9",

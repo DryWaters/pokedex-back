@@ -15,6 +15,7 @@ if (process.env.LOCAL && process.env.LOCAL === 'TRUE') {
   };
   db = pgp(connectionDetails);
 } else {
+  // db = pgp(process.env.DATABASE_URL);
   db = pgp(process.env.DATABASE_URL + '?ssl=true');
 }
 

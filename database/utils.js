@@ -83,7 +83,7 @@ const loadImageData = () => {
         .on('data', (data) => imageData.push(
             {
               image_id: data.image_id,
-              image_path: data.image_id + '.jpg',
+              image_path: data.image_id + '.png',
             }
         ))
         .on('end', () => {
