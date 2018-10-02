@@ -20,7 +20,6 @@ const rebuildData = () => {
 
 // Drops all tables if they exist
 const clearDatabase = () => {
-  // return database.db.none('DROP TABLE IF EXISTS public.images')
   return database.db.none(sql.images.dropTable)
       .then(() => database.db.none(sql.types.dropTable))
       .then(() => database.db.none(sql.pokemonTypes.dropTable))
@@ -138,7 +137,7 @@ const loadPokemonTypeData = () => {
         .pipe(csv())
         .on('data', (data) => pokemonTypeData.push(
             {
-              pokemon_id: data.pokemon_id,
+              pokemon_type_id: data.pokemon_id,
               type_id: data.type_id,
               slot: data.slot,
             }
