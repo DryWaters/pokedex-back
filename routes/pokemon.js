@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router(); // eslint-disable-line new-cap
 const database = require('../database/db');
 const POKEMON = require('../constants/pokemonConstants');
+const sql = require('../database/sql');
 
 /* GET array of Pokemon from id and range
 with endpoint of the base /pokemon
@@ -34,14 +35,7 @@ router.get('/', (req, res, next) => {
   }
 
   // Within range, get data from DB and return parsed results
-  database.db.any(
-      'select pokemon.pokemon_id as id, pokemon.name, types.name as' +
-    ' types_name, small_image_path, large_image_path from pokemon' +
-    ' INNER JOIN images ON images.image_id = pokemon.pokemon_id INNER' +
-    ' JOIN pokemon_types ON pokemon_types.pokemon_id =' +
-    ' pokemon.pokemon_id INNER JOIN types ON types.type_id =' +
-    ' pokemon_types.type_id where pokemon.pokemon_id  >= $1 and' +
-    ' pokemon.pokemon_id <= $2 ORDER BY pokemon.pokemon_id',
+  database.db.any(sql.pokemon.selectAllWithRange,
       [startingId, startingId + range - 1])
       .then((result) => {
         return res.status(200).json(parsePokemonResults(result));

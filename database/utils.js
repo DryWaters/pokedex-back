@@ -1,6 +1,7 @@
 const database = require('./db');
 const fs = require('fs');
 const csv = require('csv-parser');
+const sql = require('./sql');
 const POKEMON = require('../constants/pokemonConstants');
 
 /* Rebuilds entire pokemon database tables and inserts all data
@@ -19,25 +20,19 @@ const rebuildData = () => {
 
 // Drops all tables if they exist
 const clearDatabase = () => {
-  return database.db.none('DROP TABLE IF EXISTS public.images')
-      .then(() => database.db.none('DROP TABLE IF EXISTS public.types'))
-      .then(() => database.db.none('DROP TABLE IF EXISTS public.pokemon_types'))
-      .then(() => database.db.none('DROP TABLE IF EXISTS public.pokemon'));
+  // return database.db.none('DROP TABLE IF EXISTS public.images')
+  return database.db.none(sql.images.dropTable)
+      .then(() => database.db.none(sql.types.dropTable))
+      .then(() => database.db.none(sql.pokemonTypes.dropTable))
+      .then(() => database.db.none(sql.pokemon.dropTable));
 };
 
 // Create all tables and primary keys
 const createTables = () => {
-  return database.db.none('CREATE TABLE public.pokemon_types' +
-    ' (pokemon_id INTEGER, type_id INTEGER, slot INTEGER, CONSTRAINT ' +
-    ' pokemon_types_pkey PRIMARY KEY (pokemon_id, slot))')
-      .then(() => database.db.none('CREATE TABLE public.types' +
-      ' (type_id INTEGER PRIMARY KEY, name CHARACTER VARYING(50))'))
-      .then(() => database.db.none('CREATE TABLE' +
-      ' public.pokemon (pokemon_id INTEGER PRIMARY KEY, name' +
-      ' CHARACTER VARYING(50), image_id INTEGER UNIQUE)'))
-      .then(() => database.db.none('CREATE TABLE public.images' +
-      ' (image_id INTEGER PRIMARY KEY, small_image_path' +
-      ' CHARACTER VARYING(255), large_image_path CHARACTER VARYING(255))'));
+  return database.db.none(sql.pokemonTypes.createTable)
+      .then(() => database.db.none(sql.types.createTable))
+      .then(() => database.db.none(sql.pokemon.createTable))
+      .then(() => database.db.none(sql.images.createTable));
 };
 
 /* Loads all pokemon data from CSV file expected to be in location is
