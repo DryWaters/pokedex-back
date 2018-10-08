@@ -19,8 +19,8 @@ router.get('/', (req, res, next) => {
   if (
     range < 1 ||
     startingId < 1 ||
-    startingId > POKEMON.NUMBER_OF_POKEMON ||
-    startingId + range - 1 > POKEMON.NUMBER_OF_POKEMON ||
+    startingId > 806 ||
+    startingId + range - 1 > 806 ||
     isNaN(startingId) ||
     isNaN(range)
   ) {
@@ -28,8 +28,8 @@ router.get('/', (req, res, next) => {
         .json({
           'error': 'Invalid id or range',
           'expected params': {
-            'id': '1-' + POKEMON.NUMBER_OF_POKEMON,
-            'range': '(id + range - 1) < ' + POKEMON.NUMBER_OF_POKEMON,
+            'id': '1-806',
+            'range': '(id + range - 1) < 806',
           },
         });
   }
@@ -41,7 +41,7 @@ router.get('/', (req, res, next) => {
         return res.status(200).json(parsePokemonResults(result));
       })
       .catch((error) => {
-        console.error('Unable to process request with error: ' + error);
+        console.error(`Unable to process request with error: ${error}`);
       });
 });
 
@@ -59,8 +59,8 @@ const parsePokemonResults = (result) => {
         name: row.name,
         types: [row.types_name],
         image_path: {
-          small: row.small_image_path,
-          large: row.large_image_path,
+          small: `${POKEMON.SPRITE_PATH}small/${row.image_id}.png`,
+          large: `${POKEMON.SPRITE_PATH}large/${row.image_id}.png`,
         },
       });
     }

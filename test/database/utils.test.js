@@ -109,33 +109,6 @@ QUnit.test('Checks that pokemon data is loaded', (assert) => {
       });
 });
 
-QUnit.test('Checks that image data is loaded', (assert) => {
-  const asyncLoadImage = assert.async();
-  utils.clearDatabase()
-      .then(() => {
-        return utils.createTables();
-      })
-      .then(() => {
-        return database.db.any('SELECT COUNT(*) FROM images');
-      })
-      .then((result) => {
-        assert.equal(result[0].count, '0', 'No images =(');
-        return utils.loadImageData();
-      })
-      .then(() => {
-        return database.db.any('SELECT COUNT(*) FROM images');
-      })
-      .then((result) => {
-        asyncLoadImage();
-        assert.equal(result[0].count, POKEMON.NUMBER_OF_POKEMON,
-            'Lots of images!');
-      })
-      .catch((err) => {
-        asyncLoadImage();
-        assert.ok(false, 'Unable to load image data with error ' + err);
-      });
-});
-
 QUnit.test('Checks that type data is loaded', (assert) => {
   const asyncLoadTypes = assert.async();
   utils.clearDatabase()

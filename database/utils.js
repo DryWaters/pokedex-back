@@ -2,7 +2,6 @@ const database = require('./db');
 const fs = require('fs');
 const csv = require('csv-parser');
 const sql = require('./sql');
-const POKEMON = require('../constants/pokemonConstants');
 
 /* Rebuilds entire pokemon database tables and inserts all data
  Uses promise chaining to complete each async task one after one another
@@ -11,7 +10,6 @@ const rebuildData = () => {
   return clearDatabase()
       .then(() => createTables())
       .then(() => loadPokemonData())
-      .then(() => loadImageData())
       .then(() => loadTypeData())
       .then(() => loadPokemonTypeData())
       .catch((err) => console.log('Error creating database ' +
@@ -20,8 +18,8 @@ const rebuildData = () => {
 
 // Drops all tables if they exist
 const clearDatabase = () => {
-  return database.db.none(sql.images.dropTable)
-      .then(() => database.db.none(sql.types.dropTable))
+  return database.db.none(sql.types.dropTable)
+      .then(() => database.db.none(sql.images.dropTable))
       .then(() => database.db.none(sql.pokemonTypes.dropTable))
       .then(() => database.db.none(sql.pokemon.dropTable));
 };
@@ -30,8 +28,7 @@ const clearDatabase = () => {
 const createTables = () => {
   return database.db.none(sql.pokemonTypes.createTable)
       .then(() => database.db.none(sql.types.createTable))
-      .then(() => database.db.none(sql.pokemon.createTable))
-      .then(() => database.db.none(sql.images.createTable));
+      .then(() => database.db.none(sql.pokemon.createTable));
 };
 
 /* Loads all pokemon data from CSV file expected to be in location is
@@ -47,47 +44,14 @@ const loadPokemonData = () => {
             {
               pokemon_id: data.pokemon_id,
               name: data.name,
+              species_id: data.species_id,
               image_id: data.image_id,
+              description: data.description,
             }
         ))
         .on('end', () => {
           const insert =
             database.pgp.helpers.insert(pokemonData, database.pokemonColumns);
-          database.db.none(insert)
-              .then(() => resolve())
-              .catch((err) => {
-                console.log('Unable to ' +
-                 'load data into DB with error: ' + err);
-                reject();
-              });
-        });
-  });
-};
-
-/* Loads all image data from CSV file expected to be in location is
-./data/csv/images.csv.  It uses NPM package csv-parser. Data is inserted
-into one large batch after all data has been added to an array.
-Currently, all image_ids are assumed to be a one-to-one match
-to the Pokemon ID number.
-TODO:  Autoincrement ID in image_id field and insert that ID into
-the pokemon data table */
-const loadImageData = () => {
-  return new Promise((resolve, reject) => {
-    let imageData = [];
-    fs.createReadStream('./data/csv/images.csv')
-        .pipe(csv())
-        .on('data', (data) => imageData.push(
-            {
-              image_id: data.image_id,
-              small_image_path: POKEMON.SPRITE_PATH + 'small/' +
-                data.image_id + '.png',
-              large_image_path: POKEMON.SPRITE_PATH + 'large/' +
-                data.image_id + '.png',
-            }
-        ))
-        .on('end', () => {
-          const insert =
-            database.pgp.helpers.insert(imageData, database.imageColumns);
           database.db.none(insert)
               .then(() => resolve())
               .catch((err) => {
@@ -164,7 +128,6 @@ module.exports = {
   clearDatabase,
   createTables,
   loadPokemonData,
-  loadImageData,
   loadTypeData,
   loadPokemonTypeData,
 };

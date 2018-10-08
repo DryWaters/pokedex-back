@@ -18,10 +18,10 @@ QUnit.test('Valid Single Pokemon Request, /pokemon?id=1&range=1', (assert) => {
     'pokemon': [
       {
         'id': 1,
-        'name': 'bulbasaur',
+        'name': 'Bulbasaur',
         'types': [
-          'grass',
-          'poison',
+          'Grass',
+          'Poison',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/1.png',
@@ -55,9 +55,9 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
     'pokemon': [
       {
         'id': 5,
-        'name': 'charmeleon',
+        'name': 'Charmeleon',
         'types': [
-          'fire',
+          'Fire',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/5.png',
@@ -66,10 +66,10 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
       },
       {
         'id': 6,
-        'name': 'charizard',
+        'name': 'Charizard',
         'types': [
-          'fire',
-          'flying',
+          'Fire',
+          'Flying',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/6.png',
@@ -78,9 +78,9 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
       },
       {
         'id': 7,
-        'name': 'squirtle',
+        'name': 'Squirtle',
         'types': [
-          'water',
+          'Water',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/7.png',
@@ -89,9 +89,9 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
       },
       {
         'id': 8,
-        'name': 'wartortle',
+        'name': 'Wartortle',
         'types': [
-          'water',
+          'Water',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/8.png',
@@ -100,9 +100,9 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
       },
       {
         'id': 9,
-        'name': 'blastoise',
+        'name': 'Blastoise',
         'types': [
-          'water',
+          'Water',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/9.png',

@@ -21,14 +21,10 @@ if (process.env.LOCAL && process.env.LOCAL === 'TRUE') {
 const pokemonColumns = new pgp.helpers.ColumnSet([
   'pokemon_id',
   'name',
+  'species_id',
   'image_id',
+  'description',
 ], {table: 'pokemon'});
-
-const imageColumns = new pgp.helpers.ColumnSet([
-  'image_id',
-  'small_image_path',
-  'large_image_path',
-], {table: 'images'});
 
 const typeColumns = new pgp.helpers.ColumnSet([
   'type_id',
@@ -45,7 +41,6 @@ module.exports = {
   db,
   pgp,
   pokemonColumns,
-  imageColumns,
   typeColumns,
   pokemonTypeColumns,
 };

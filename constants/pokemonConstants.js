@@ -1,5 +1,5 @@
-const NUMBER_OF_POKEMON = 806;
-const NUMBER_OF_TABLES = 4;
+const NUMBER_OF_POKEMON = 1007;
+const NUMBER_OF_TABLES = 3;
 const NUMBER_OF_TYPES = 18;
 const TOTAL_POKEMON_WITH_TYPES = 1211;
 const SPRITE_PATH = '/sprites/pokemon/';
