@@ -38,7 +38,7 @@ QUnit.test('Checks that clears tables', (assert) => {
   'WHERE table_schema=\'public\'')
       .then((result) => {
         assert.equal(result[0].count, POKEMON.NUMBER_OF_TABLES,
-            'Current number of tables is 4');
+            `Current number of tables is ${POKEMON.NUMBER_OF_TABLES}`);
         checkTableAmount();
         return utils.clearDatabase();
       })
@@ -100,12 +100,12 @@ QUnit.test('Checks that pokemon data is loaded', (assert) => {
       })
       .then((result) => {
         asyncLoadPokemon();
-        assert.equal(result[0].count, POKEMON.NUMBER_OF_POKEMON,
+        assert.equal(result[0].count, POKEMON.NUM_POKEMON_WITH_ALT_FORMS,
             'Lots of pokemon!');
       })
       .catch((err) => {
         asyncLoadPokemon();
-        assert.ok(false, 'Unable to load pokemon data with error ' + err);
+        assert.ok(false, `Unable to load pokemon data with error ${err}`);
       });
 });
 
@@ -132,7 +132,7 @@ QUnit.test('Checks that type data is loaded', (assert) => {
       })
       .catch((err) => {
         asyncLoadTypes();
-        assert.ok(false, 'Unable to load type data with error ' + err);
+        assert.ok(false, `Unable to load type data with error ${err}`);
       });
 });
 
@@ -159,6 +159,6 @@ QUnit.test('Checks that pokemon type data is loaded', (assert) => {
       })
       .catch((err) => {
         asyncLoadPokemonTypes();
-        assert.ok(false, 'Unable to load type data with error ' + err);
+        assert.ok(false, `Unable to load type data with error ${err}`);
       });
 });

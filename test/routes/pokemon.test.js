@@ -20,8 +20,8 @@ QUnit.test('Valid Single Pokemon Request, /pokemon?id=1&range=1', (assert) => {
         'id': 1,
         'name': 'Bulbasaur',
         'types': [
-          'Grass',
-          'Poison',
+          'grass',
+          'poison',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/1.png',
@@ -57,7 +57,7 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
         'id': 5,
         'name': 'Charmeleon',
         'types': [
-          'Fire',
+          'fire',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/5.png',
@@ -68,8 +68,8 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
         'id': 6,
         'name': 'Charizard',
         'types': [
-          'Fire',
-          'Flying',
+          'fire',
+          'flying',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/6.png',
@@ -80,7 +80,7 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
         'id': 7,
         'name': 'Squirtle',
         'types': [
-          'Water',
+          'water',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/7.png',
@@ -91,7 +91,7 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
         'id': 8,
         'name': 'Wartortle',
         'types': [
-          'Water',
+          'water',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/8.png',
@@ -102,7 +102,7 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
         'id': 9,
         'name': 'Blastoise',
         'types': [
-          'Water',
+          'water',
         ],
         'image_path': {
           'small': '/sprites/pokemon/small/9.png',

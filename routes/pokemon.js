@@ -28,8 +28,8 @@ router.get('/', (req, res, next) => {
         .json({
           'error': 'Invalid id or range',
           'expected params': {
-            'id': '1-806',
-            'range': '(id + range - 1) < 806',
+            'id': `1-${POKEMON.NUMBER_OF_POKEMON}`,
+            'range': `(id + range - 1) < ${POKEMON.NUMBER_OF_POKEMON}`,
           },
         });
   }
