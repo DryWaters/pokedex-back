@@ -122,9 +122,9 @@ const loadPokemonTypeData = () => {
   });
 };
 
-/* Loads all pokemon data from CSV file expected to be in location is
-./data/csv/pokemon.csv.  It uses NPM package csv-parser. Data is inserted
-into one large batch after all data has been added to an array.
+/* Loads all pokemon description data from CSV file expected to be in
+location ./data/csv/pokemon_desc.csv.  It uses NPM package csv-parser.
+Data is inserted into one large batch after all data has been added to an array.
 */
 const loadPokemonDescData = () => {
   return new Promise((resolve, reject) => {

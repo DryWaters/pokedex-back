@@ -34,8 +34,8 @@ QUnit.test('Checks that Database Utils Exists', (assert) => {
 QUnit.test('Checks that clears tables', (assert) => {
   const checkTableAmount = assert.async();
   const checkClearedAllTables = assert.async();
-  database.db.any('SELECT COUNT(table_name) FROM information_schema.tables '+
-  'WHERE table_schema=\'public\'')
+  database.db.any('SELECT COUNT(table_name) FROM information_schema.tables ' +
+    'WHERE table_schema=\'public\'')
       .then((result) => {
         assert.equal(result[0].count, POKEMON.NUMBER_OF_TABLES,
             `Current number of tables is ${POKEMON.NUMBER_OF_TABLES}`);
@@ -44,7 +44,7 @@ QUnit.test('Checks that clears tables', (assert) => {
       })
       .then((result) => {
         return database.db.any('SELECT COUNT(table_name) FROM ' +
-          'information_schema.tables WHERE table_schema=\'public\'');
+        'information_schema.tables WHERE table_schema=\'public\'');
       })
       .then((result) => {
         checkClearedAllTables();
@@ -68,7 +68,7 @@ QUnit.test('Checks that tables are created', (assert) => {
       })
       .then(() => {
         return database.db.any('SELECT COUNT(table_name) ' +
-        'FROM information_schema.tables '+
+        'FROM information_schema.tables ' +
         'WHERE table_schema=\'public\'');
       })
       .then((result) => {
@@ -161,4 +161,31 @@ QUnit.test('Checks that pokemon type data is loaded', (assert) => {
         asyncLoadPokemonTypes();
         assert.ok(false, `Unable to load type data with error ${err}`);
       });
+
+  QUnit.test('Checks that pokemon desc data is loaded', (assert) => {
+    const asyncLoadPokemonTypes = assert.async();
+    utils.clearDatabase()
+        .then(() => {
+          return utils.createTables();
+        })
+        .then(() => {
+          return database.db.any('SELECT COUNT(*) FROM pokemon_desc');
+        })
+        .then((result) => {
+          assert.equal(result[0].count, '0', 'No pokemon desc =(');
+          return utils.loadPokemonDescData();
+        })
+        .then(() => {
+          return database.db.any('SELECT COUNT(*) FROM pokemon_desc');
+        })
+        .then((result) => {
+          asyncLoadPokemonTypes();
+          assert.equal(result[0].count, POKEMON.NUMBER_OF_POKEMON,
+              'Lots of pokemon descriptions!');
+        })
+        .catch((err) => {
+          asyncLoadPokemonTypes();
+          assert.ok(false, `Unable to load type data with error ${err}`);
+        });
+  });
 });
