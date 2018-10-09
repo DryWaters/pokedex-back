@@ -29,21 +29,8 @@ module.exports = {
     dropTable: sql('types/dropTable.sql'),
     createTable: sql('types/createTable.sql'),
   },
-  images: {
-    dropTable: sql('images/dropTable.sql'),
-    createTable: sql('images/createTable.sql'),
+  pokemonDesc: {
+    dropTable: sql('pokemonDesc/dropTable.sql'),
+    createTable: sql('pokemonDesc/createTable.sql'),
   },
-
-  // // external queries for Users:
-  // users: {
-  //   add: sql('users/create.sql'),
-  //   search: sql('users/search.sql'),
-  //   report: sql('users/report.sql'),
-  // },
-  // // external queries for Products:
-  // products: {
-  //   add: sql('products/add.sql'),
-  //   quote: sql('products/quote.sql'),
-  //   search: sql('products/search.sql'),
-  // },
 };

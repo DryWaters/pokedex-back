@@ -23,7 +23,6 @@ const pokemonColumns = new pgp.helpers.ColumnSet([
   'name',
   'species_id',
   'image_id',
-  'description',
 ], {table: 'pokemon'});
 
 const typeColumns = new pgp.helpers.ColumnSet([
@@ -37,10 +36,16 @@ const pokemonTypeColumns = new pgp.helpers.ColumnSet([
   'slot',
 ], {table: 'pokemon_types'});
 
+const pokemonDescColumns = new pgp.helpers.ColumnSet([
+  'pokemon_id',
+  'p_desc',
+], {table: 'pokemon_desc'});
+
 module.exports = {
   db,
   pgp,
   pokemonColumns,
   typeColumns,
   pokemonTypeColumns,
+  pokemonDescColumns,
 };
