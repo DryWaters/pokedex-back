@@ -6,8 +6,8 @@ const sql = require('../database/sql');
 
 /* GET array of Pokemon from id and range
 with endpoint of the base /pokemon
-Expected id is from 1 - 806
-Expected range (ID + RANGE - 1) lies within 1 - 806
+Expected id is from 1 - 807
+Expected range (ID + RANGE - 1) lies within 1 - 807
 
 example to get one pokemon
 /pokemon?id=20&range=1
@@ -19,8 +19,8 @@ router.get('/', (req, res, next) => {
   if (
     range < 1 ||
     startingId < 1 ||
-    startingId > 806 ||
-    startingId + range - 1 > 806 ||
+    startingId > POKEMON.NUMBER_OF_POKEMON ||
+    startingId + range - 1 > POKEMON.NUMBER_OF_POKEMON ||
     isNaN(startingId) ||
     isNaN(range)
   ) {
@@ -58,10 +58,7 @@ const parsePokemonResults = (result) => {
         id: row.id,
         name: row.name,
         types: [row.types_name],
-        image_path: {
-          small: `${POKEMON.SPRITE_PATH}small/${row.image_id}.png`,
-          large: `${POKEMON.SPRITE_PATH}large/${row.image_id}.png`,
-        },
+        image_path: `${POKEMON.SPRITE_PATH}large/${row.image_id}.png`,
       });
     }
   });
