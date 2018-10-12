@@ -805,6 +805,7 @@ pokemon_id,name,species_id,image_id,evol_id
 804,Naganadel,386,804,274
 805,Stakataka,386,805,0
 806,Blacephalon,413,806,0
+807,Zeraora,807,807,0
 10000,Deoxys,386,386,
 10001,Attack Form,386,10001,
 10002,Defense Form,386,10002,
