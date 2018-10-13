@@ -20,7 +20,7 @@ router.get('/', (req, res, next) => {
     range < 1 ||
     startingId < 1 ||
     startingId > POKEMON.NUMBER_OF_POKEMON ||
-    startingId + range - 1 > NUMBER_OF_POKEMON ||
+    startingId + range - 1 > POKEMON.NUMBER_OF_POKEMON ||
     isNaN(startingId) ||
     isNaN(range)
   ) {
@@ -58,10 +58,7 @@ const parsePokemonResults = (result) => {
         id: row.id,
         name: row.name,
         types: [row.types_name],
-        image_path: {
-          small: `${POKEMON.SPRITE_PATH}small/${row.image_id}.png`,
-          large: `${POKEMON.SPRITE_PATH}large/${row.image_id}.png`,
-        },
+        image_path: `${POKEMON.SPRITE_PATH}large/${row.image_id}.png`,
       });
     }
   });

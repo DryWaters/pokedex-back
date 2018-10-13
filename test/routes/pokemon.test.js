@@ -6,8 +6,8 @@ const POKEMON = require('../../constants/pokemonConstants');
 const errorResult = {
   'error': 'Invalid id or range',
   'expected params': {
-    'id': '1-806',
-    'range': '(id + range - 1) < 806',
+    'id': `1-${POKEMON.NUMBER_OF_POKEMON}`,
+    'range': `(id + range - 1) < ${POKEMON.NUMBER_OF_POKEMON}`,
   },
 };
 
@@ -23,10 +23,7 @@ QUnit.test('Valid Single Pokemon Request, /pokemon?id=1&range=1', (assert) => {
           'grass',
           'poison',
         ],
-        'image_path': {
-          'small': '/sprites/pokemon/small/1.png',
-          'large': '/sprites/pokemon/large/1.png',
-        },
+        'image_path': '/sprites/pokemon/large/1.png',
       },
     ],
   };
@@ -59,10 +56,7 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
         'types': [
           'fire',
         ],
-        'image_path': {
-          'small': '/sprites/pokemon/small/5.png',
-          'large': '/sprites/pokemon/large/5.png',
-        },
+        'image_path': '/sprites/pokemon/large/5.png',
       },
       {
         'id': 6,
@@ -71,10 +65,7 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
           'fire',
           'flying',
         ],
-        'image_path': {
-          'small': '/sprites/pokemon/small/6.png',
-          'large': '/sprites/pokemon/large/6.png',
-        },
+        'image_path': '/sprites/pokemon/large/6.png',
       },
       {
         'id': 7,
@@ -82,10 +73,7 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
         'types': [
           'water',
         ],
-        'image_path': {
-          'small': '/sprites/pokemon/small/7.png',
-          'large': '/sprites/pokemon/large/7.png',
-        },
+        'image_path': '/sprites/pokemon/large/7.png',
       },
       {
         'id': 8,
@@ -93,10 +81,7 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
         'types': [
           'water',
         ],
-        'image_path': {
-          'small': '/sprites/pokemon/small/8.png',
-          'large': '/sprites/pokemon/large/8.png',
-        },
+        'image_path': '/sprites/pokemon/large/8.png',
       },
       {
         'id': 9,
@@ -104,10 +89,7 @@ QUnit.test('Valid Range of Pokemon, /pokemon?id=5&range=5', (assert) => {
         'types': [
           'water',
         ],
-        'image_path': {
-          'small': '/sprites/pokemon/small/9.png',
-          'large': '/sprites/pokemon/large/9.png',
-        },
+        'image_path': '/sprites/pokemon/large/9.png',
       },
     ],
   };
