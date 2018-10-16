@@ -188,4 +188,31 @@ QUnit.test('Checks that pokemon type data is loaded', (assert) => {
           assert.ok(false, `Unable to load type data with error ${err}`);
         });
   });
+
+  QUnit.test('Checks that pokemon evolution data is loaded', (assert) => {
+    const asyncLoadEvolutionData = assert.async();
+    utils.clearDatabase()
+        .then(() => {
+          return utils.createTables();
+        })
+        .then(() => {
+          return database.db.any('SELECT COUNT(*) FROM evolutions');
+        })
+        .then((result) => {
+          assert.equal(result[0].count, '0', 'No pokemon evolutions =(');
+          return utils.loadEvolutionData();
+        })
+        .then(() => {
+          return database.db.any('SELECT COUNT(*) FROM evolutions');
+        })
+        .then((result) => {
+          asyncLoadEvolutionData();
+          assert.equal(result[0].count, POKEMON.NUMBER_OF_EVOLUTIONS,
+              'Lots of evolutions!');
+        })
+        .catch((err) => {
+          asyncLoadEvolutionData();
+          assert.ok(false, `Unable to load type data with error ${err}`);
+        });
+  });
 });

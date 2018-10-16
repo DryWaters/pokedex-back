@@ -13,6 +13,7 @@ const rebuildData = () => {
       .then(() => loadTypeData())
       .then(() => loadPokemonTypeData())
       .then(() => loadPokemonDescData())
+      .then(() => loadEvolutionData())
       .catch((err) => console.log('Error creating database ' +
   'with error: ' + err));
 };
@@ -22,7 +23,8 @@ const clearDatabase = () => {
   return database.db.none(sql.types.dropTable)
       .then(() => database.db.none(sql.pokemonTypes.dropTable))
       .then(() => database.db.none(sql.pokemon.dropTable))
-      .then(() => database.db.none(sql.pokemonDesc.dropTable));
+      .then(() => database.db.none(sql.pokemonDesc.dropTable))
+      .then(() => database.db.none(sql.evolutions.dropTable));
 };
 
 // Create all tables and primary keys
@@ -30,7 +32,8 @@ const createTables = () => {
   return database.db.none(sql.pokemonTypes.createTable)
       .then(() => database.db.none(sql.types.createTable))
       .then(() => database.db.none(sql.pokemon.createTable))
-      .then(() => database.db.none(sql.pokemonDesc.createTable));
+      .then(() => database.db.none(sql.pokemonDesc.createTable))
+      .then(() => database.db.none(sql.evolutions.createTable));
 };
 
 /* Loads all pokemon data from CSV file expected to be in location is
@@ -159,6 +162,36 @@ const loadPokemonDescData = () => {
   });
 };
 
+/* Loads all type definition data from CSV file expected to be in location is
+./data/csv/types.csv.  It uses NPM package csv-parser. Data is inserted
+into one large batch after all data has been added to an array. */
+const loadEvolutionData = () => {
+  return new Promise((resolve, reject) => {
+    let evolutionData = [];
+    fs.createReadStream('./data/csv/evolutions.csv')
+        .pipe(csv())
+        .on('data', (data) => evolutionData.push(
+            {
+              evolution_id: data.evolution_id,
+              evolve_1: data.evolve_1,
+              evolve_2: data.evolve_2 || null,
+              evolve_3: data.evolve_3 || null,
+            }
+        ))
+        .on('end', () => {
+          const insert =
+          database.pgp.helpers.insert(evolutionData, database.evolutionColumns);
+          database.db.none(insert)
+              .then(() => resolve())
+              .catch((err) => {
+                console.log('Unable to ' +
+                  'load data into DB with error: ' + err);
+                reject();
+              });
+        });
+  });
+};
+
 // Exports all functions so they can be tested, only function needed
 // by main application is the rebuildData() that calls all other functions
 module.exports = {
@@ -169,5 +202,6 @@ module.exports = {
   loadTypeData,
   loadPokemonTypeData,
   loadPokemonDescData,
+  loadEvolutionData,
 };
 

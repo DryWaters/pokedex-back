@@ -33,4 +33,8 @@ module.exports = {
     dropTable: sql('pokemonDesc/dropTable.sql'),
     createTable: sql('pokemonDesc/createTable.sql'),
   },
+  evolutions: {
+    dropTable: sql('evolutions/dropTable.sql'),
+    createTable: sql('evolutions/createTable.sql'),
+  },
 };
