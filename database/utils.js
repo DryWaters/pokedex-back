@@ -16,6 +16,7 @@ const rebuildData = () => {
       .then(() => loadEvolutionData())
       .then(() => loadAbilitiesData())
       .then(() => loadSpeciesData())
+      .then(() => loadDamageData())
       .catch((err) => console.log('Error creating database ' +
   'with error: ' + err));
 };
@@ -28,6 +29,7 @@ const clearDatabase = () => {
       .then(() => database.db.none(sql.pokemonDesc.dropTable))
       .then(() => database.db.none(sql.evolutions.dropTable))
       .then(() => database.db.none(sql.species.dropTable))
+      .then(() => database.db.none(sql.damageStats.dropTable))
       .then(() => database.db.none(sql.abilities.dropTable));
 };
 
@@ -39,6 +41,7 @@ const createTables = () => {
       .then(() => database.db.none(sql.pokemonDesc.createTable))
       .then(() => database.db.none(sql.evolutions.createTable))
       .then(() => database.db.none(sql.species.createTable))
+      .then(() => database.db.none(sql.damageStats.createTable))
       .then(() => database.db.none(sql.abilities.createTable));
 };
 
@@ -258,6 +261,53 @@ const loadSpeciesData = () => {
   });
 };
 
+/* Loads all damage data from CSV file expected
+to be in location is ./data/csv/damage_stats.csv.  It uses NPM
+package csv-parser. Data is inserted into one large batch after
+all data has been added to an array. */
+const loadDamageData = () => {
+  return new Promise((resolve, reject) => {
+    let damageData = [];
+    fs.createReadStream('./data/csv/damage_stats.csv')
+        .pipe(csv())
+        .on('data', (data) => damageData.push(
+            {
+              type_1: data.type_1,
+              type_2: data.type_2,
+              normal: data.normal || null,
+              fire: data.fire || null,
+              water: data.water || null,
+              electric: data.electric || null,
+              grass: data.grass || null,
+              ice: data.ice || null,
+              fighting: data.fighting || null,
+              poison: data.poison || null,
+              ground: data.ground || null,
+              flying: data.flying || null,
+              psychic: data.psychic || null,
+              bug: data.bug || null,
+              rock: data.rock || null,
+              ghost: data.ghost || null,
+              dragon: data.dragon || null,
+              dark: data.dark || null,
+              steel: data.steel || null,
+              fairy: data.fairy || null,
+            }
+        ))
+        .on('end', () => {
+          const insert =
+          database.pgp.helpers.insert(damageData, database.damageColumns);
+          database.db.none(insert)
+              .then(() => resolve())
+              .catch((err) => {
+                console.log('Unable to ' +
+                  'load data into DB with error: ' + err);
+                reject();
+              });
+        });
+  });
+};
+
 // Exports all functions so they can be tested, only function needed
 // by main application is the rebuildData() that calls all other functions
 module.exports = {
@@ -271,5 +321,6 @@ module.exports = {
   loadEvolutionData,
   loadAbilitiesData,
   loadSpeciesData,
+  loadDamageData,
 };
 

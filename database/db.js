@@ -66,6 +66,29 @@ const speciesColumns = new pgp.helpers.ColumnSet([
   'species',
 ], {table: 'species'});
 
+const damageColumns = new pgp.helpers.ColumnSet([
+  'type_1',
+  'type_2',
+  'normal',
+  'fire',
+  'water',
+  'electric',
+  'grass',
+  'ice',
+  'fighting',
+  'poison',
+  'ground',
+  'flying',
+  'psychic',
+  'bug',
+  'rock',
+  'ghost',
+  'dragon',
+  'dark',
+  'steel',
+  'fairy',
+], {table: 'damage_stats'});
+
 module.exports = {
   db,
   pgp,
@@ -76,4 +99,5 @@ module.exports = {
   evolutionColumns,
   abilitiesColumns,
   speciesColumns,
+  damageColumns,
 };

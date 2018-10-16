@@ -39,4 +39,8 @@ module.exports = {
     dropTable: sql('species/dropTable.sql'),
     createTable: sql('species/createTable.sql'),
   },
+  damageStats: {
+    dropTable: sql('damageStats/dropTable.sql'),
+    createTable: sql('damageStats/createTable.sql'),
+  },
 };

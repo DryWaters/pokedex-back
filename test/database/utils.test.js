@@ -269,4 +269,31 @@ QUnit.test('Checks that pokemon type data is loaded', (assert) => {
           assert.ok(false, `Unable to load type data with error ${err}`);
         });
   });
+
+  QUnit.test('Checks that damage stat data is loaded', (assert) => {
+    const asyncLoadDamageStatData = assert.async();
+    utils.clearDatabase()
+        .then(() => {
+          return utils.createTables();
+        })
+        .then(() => {
+          return database.db.any('SELECT COUNT(*) FROM damage_stats');
+        })
+        .then((result) => {
+          assert.equal(result[0].count, '0', 'No pokemon damage data =(');
+          return utils.loadDamageData();
+        })
+        .then(() => {
+          return database.db.any('SELECT COUNT(*) FROM damage_stats');
+        })
+        .then((result) => {
+          asyncLoadDamageStatData();
+          assert.equal(result[0].count, POKEMON.NUMBER_OF_DAMAGE_TYPES,
+              'Lots of stats!');
+        })
+        .catch((err) => {
+          asyncLoadDamageStatData();
+          assert.ok(false, `Unable to load type data with error ${err}`);
+        });
+  });
 });
