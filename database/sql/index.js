@@ -1,11 +1,5 @@
 // File sql.js
 
-// Proper way to organize an sql provider:
-//
-// - have all sql files for Users in ./sql/users
-// - have all sql files for Products in ./sql/products
-// - have your sql provider module as ./sql/index.js
-
 const QueryFile = require('pg-promise').QueryFile;
 const path = require('path');
 
@@ -40,5 +34,9 @@ module.exports = {
   abilities: {
     dropTable: sql('abilities/dropTable.sql'),
     createTable: sql('abilities/createTable.sql'),
+  },
+  species: {
+    dropTable: sql('species/dropTable.sql'),
+    createTable: sql('species/createTable.sql'),
   },
 };

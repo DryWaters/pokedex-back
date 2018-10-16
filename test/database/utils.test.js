@@ -242,4 +242,31 @@ QUnit.test('Checks that pokemon type data is loaded', (assert) => {
           assert.ok(false, `Unable to load type data with error ${err}`);
         });
   });
+
+  QUnit.test('Checks that pokemon species data is loaded', (assert) => {
+    const asyncLoadSpeciesData = assert.async();
+    utils.clearDatabase()
+        .then(() => {
+          return utils.createTables();
+        })
+        .then(() => {
+          return database.db.any('SELECT COUNT(*) FROM species');
+        })
+        .then((result) => {
+          assert.equal(result[0].count, '0', 'No pokemon species =(');
+          return utils.loadSpeciesData();
+        })
+        .then(() => {
+          return database.db.any('SELECT COUNT(*) FROM species');
+        })
+        .then((result) => {
+          asyncLoadSpeciesData();
+          assert.equal(result[0].count, POKEMON.NUMBER_OF_POKEMON,
+              'Lots of abilities!');
+        })
+        .catch((err) => {
+          asyncLoadSpeciesData();
+          assert.ok(false, `Unable to load type data with error ${err}`);
+        });
+  });
 });

@@ -15,6 +15,7 @@ const rebuildData = () => {
       .then(() => loadPokemonDescData())
       .then(() => loadEvolutionData())
       .then(() => loadAbilitiesData())
+      .then(() => loadSpeciesData())
       .catch((err) => console.log('Error creating database ' +
   'with error: ' + err));
 };
@@ -26,6 +27,7 @@ const clearDatabase = () => {
       .then(() => database.db.none(sql.pokemon.dropTable))
       .then(() => database.db.none(sql.pokemonDesc.dropTable))
       .then(() => database.db.none(sql.evolutions.dropTable))
+      .then(() => database.db.none(sql.species.dropTable))
       .then(() => database.db.none(sql.abilities.dropTable));
 };
 
@@ -36,6 +38,7 @@ const createTables = () => {
       .then(() => database.db.none(sql.pokemon.createTable))
       .then(() => database.db.none(sql.pokemonDesc.createTable))
       .then(() => database.db.none(sql.evolutions.createTable))
+      .then(() => database.db.none(sql.species.createTable))
       .then(() => database.db.none(sql.abilities.createTable));
 };
 
@@ -226,6 +229,35 @@ const loadAbilitiesData = () => {
   });
 };
 
+/* Loads all species  data from CSV file expected
+to be in location is ./data/csv/species.csv.  It uses NPM
+package csv-parser. Data is inserted into one large batch after
+all data has been added to an array. */
+const loadSpeciesData = () => {
+  return new Promise((resolve, reject) => {
+    let speciesData = [];
+    fs.createReadStream('./data/csv/species.csv')
+        .pipe(csv())
+        .on('data', (data) => speciesData.push(
+            {
+              pokemon_id: data.pokemon_id,
+              species: data.species,
+            }
+        ))
+        .on('end', () => {
+          const insert =
+          database.pgp.helpers.insert(speciesData, database.speciesColumns);
+          database.db.none(insert)
+              .then(() => resolve())
+              .catch((err) => {
+                console.log('Unable to ' +
+                  'load data into DB with error: ' + err);
+                reject();
+              });
+        });
+  });
+};
+
 // Exports all functions so they can be tested, only function needed
 // by main application is the rebuildData() that calls all other functions
 module.exports = {
@@ -238,5 +270,6 @@ module.exports = {
   loadPokemonDescData,
   loadEvolutionData,
   loadAbilitiesData,
+  loadSpeciesData,
 };
 

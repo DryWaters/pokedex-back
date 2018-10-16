@@ -61,6 +61,11 @@ const abilitiesColumns = new pgp.helpers.ColumnSet([
   'short_effect',
 ], {table: 'abilities'});
 
+const speciesColumns = new pgp.helpers.ColumnSet([
+  'pokemon_id',
+  'species',
+], {table: 'species'});
+
 module.exports = {
   db,
   pgp,
@@ -70,4 +75,5 @@ module.exports = {
   pokemonDescColumns,
   evolutionColumns,
   abilitiesColumns,
+  speciesColumns,
 };
