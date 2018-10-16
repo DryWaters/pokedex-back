@@ -23,6 +23,13 @@ const pokemonColumns = new pgp.helpers.ColumnSet([
   'name',
   'species_id',
   'image_id',
+  'evol_id',
+  'hp',
+  'attack',
+  'defense',
+  'special_attack',
+  'special_defense',
+  'speed',
 ], {table: 'pokemon'});
 
 const typeColumns = new pgp.helpers.ColumnSet([
@@ -31,7 +38,7 @@ const typeColumns = new pgp.helpers.ColumnSet([
 ], {table: 'types'});
 
 const pokemonTypeColumns = new pgp.helpers.ColumnSet([
-  'pokemon_type_id',
+  'pokemon_id',
   'type_id',
   'slot',
 ], {table: 'pokemon_types'});

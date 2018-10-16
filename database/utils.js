@@ -14,7 +14,7 @@ const rebuildData = () => {
       .then(() => loadPokemonTypeData())
       .then(() => loadPokemonDescData())
       .catch((err) => console.log('Error creating database ' +
-      'with error: ' + err));
+  'with error: ' + err));
 };
 
 // Drops all tables if they exist
@@ -48,6 +48,13 @@ const loadPokemonData = () => {
               name: data.name,
               species_id: data.species_id,
               image_id: data.image_id,
+              evol_id: data.evol_id,
+              hp: data.hp,
+              attack: data.attack,
+              defense: data.defense,
+              special_attack: data.special_attack,
+              special_defense: data.special_defense,
+              speed: data.speed,
             }
         ))
         .on('end', () => {
@@ -102,7 +109,7 @@ const loadPokemonTypeData = () => {
         .pipe(csv())
         .on('data', (data) => pokemonTypeData.push(
             {
-              pokemon_type_id: data.pokemon_id,
+              pokemon_id: data.pokemon_id,
               type_id: data.type_id,
               slot: data.slot,
             }
@@ -116,7 +123,7 @@ const loadPokemonTypeData = () => {
               .catch((err) => {
                 console.log('Unable to ' +
                   'load data into DB with error: ' + err);
-                reject();
+                reject('At pokemon type data');
               });
         });
   });
