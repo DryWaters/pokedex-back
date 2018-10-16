@@ -37,4 +37,8 @@ module.exports = {
     dropTable: sql('evolutions/dropTable.sql'),
     createTable: sql('evolutions/createTable.sql'),
   },
+  abilities: {
+    dropTable: sql('abilities/dropTable.sql'),
+    createTable: sql('abilities/createTable.sql'),
+  },
 };

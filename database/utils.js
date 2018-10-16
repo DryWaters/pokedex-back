@@ -14,6 +14,7 @@ const rebuildData = () => {
       .then(() => loadPokemonTypeData())
       .then(() => loadPokemonDescData())
       .then(() => loadEvolutionData())
+      .then(() => loadAbilitiesData())
       .catch((err) => console.log('Error creating database ' +
   'with error: ' + err));
 };
@@ -24,7 +25,8 @@ const clearDatabase = () => {
       .then(() => database.db.none(sql.pokemonTypes.dropTable))
       .then(() => database.db.none(sql.pokemon.dropTable))
       .then(() => database.db.none(sql.pokemonDesc.dropTable))
-      .then(() => database.db.none(sql.evolutions.dropTable));
+      .then(() => database.db.none(sql.evolutions.dropTable))
+      .then(() => database.db.none(sql.abilities.dropTable));
 };
 
 // Create all tables and primary keys
@@ -33,7 +35,8 @@ const createTables = () => {
       .then(() => database.db.none(sql.types.createTable))
       .then(() => database.db.none(sql.pokemon.createTable))
       .then(() => database.db.none(sql.pokemonDesc.createTable))
-      .then(() => database.db.none(sql.evolutions.createTable));
+      .then(() => database.db.none(sql.evolutions.createTable))
+      .then(() => database.db.none(sql.abilities.createTable));
 };
 
 /* Loads all pokemon data from CSV file expected to be in location is
@@ -162,9 +165,10 @@ const loadPokemonDescData = () => {
   });
 };
 
-/* Loads all type definition data from CSV file expected to be in location is
-./data/csv/types.csv.  It uses NPM package csv-parser. Data is inserted
-into one large batch after all data has been added to an array. */
+/* Loads all evolution definition data from CSV file expected to
+ be in location is ./data/csv/evolutions.csv.  It uses NPM package
+ csv-parser. Data is inserted into one large batch after all
+ data has been added to an array. */
 const loadEvolutionData = () => {
   return new Promise((resolve, reject) => {
     let evolutionData = [];
@@ -192,6 +196,36 @@ const loadEvolutionData = () => {
   });
 };
 
+/* Loads all abilities definition data from CSV file expected
+to be in location is ./data/csv/abilities.csv.  It uses NPM
+package csv-parser. Data is inserted into one large batch after
+all data has been added to an array. */
+const loadAbilitiesData = () => {
+  return new Promise((resolve, reject) => {
+    let abilitiesData = [];
+    fs.createReadStream('./data/csv/abilities.csv')
+        .pipe(csv({separator: '`'}))
+        .on('data', (data) => abilitiesData.push(
+            {
+              abil_id: data.abil_id,
+              name: data.name,
+              short_effect: data.short_effect,
+            }
+        ))
+        .on('end', () => {
+          const insert =
+          database.pgp.helpers.insert(abilitiesData, database.abilitiesColumns);
+          database.db.none(insert)
+              .then(() => resolve())
+              .catch((err) => {
+                console.log('Unable to ' +
+                  'load data into DB with error: ' + err);
+                reject();
+              });
+        });
+  });
+};
+
 // Exports all functions so they can be tested, only function needed
 // by main application is the rebuildData() that calls all other functions
 module.exports = {
@@ -203,5 +237,6 @@ module.exports = {
   loadPokemonTypeData,
   loadPokemonDescData,
   loadEvolutionData,
+  loadAbilitiesData,
 };
 
