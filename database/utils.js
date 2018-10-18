@@ -30,6 +30,7 @@ const clearDatabase = () => {
       .then(() => database.db.none(sql.evolutions.dropTable))
       .then(() => database.db.none(sql.species.dropTable))
       .then(() => database.db.none(sql.damageStats.dropTable))
+      .then(() => database.db.none(sql.pokemonAbils.dropTable))
       .then(() => database.db.none(sql.abilities.dropTable));
 };
 
@@ -42,6 +43,7 @@ const createTables = () => {
       .then(() => database.db.none(sql.evolutions.createTable))
       .then(() => database.db.none(sql.species.createTable))
       .then(() => database.db.none(sql.damageStats.createTable))
+      .then(() => database.db.none(sql.pokemonAbils.createTable))
       .then(() => database.db.none(sql.abilities.createTable));
 };
 
@@ -261,6 +263,38 @@ const loadSpeciesData = () => {
   });
 };
 
+/* Loads all pokemon abils data from CSV file expected
+to be in location is ./data/csv/pokemon_abilities.csv.  It uses NPM
+package csv-parser. Data is inserted into one large batch after
+all data has been added to an array. */
+const loadPokemonAbilitiesData = () => {
+  return new Promise((resolve, reject) => {
+    let pokemonAbilsData = [];
+    fs.createReadStream('./data/csv/pokemon_abilities.csv')
+        .pipe(csv())
+        .on('data', (data) => pokemonAbilsData.push(
+            {
+              pokemon_id: data.pokemon_id,
+              ability_id: data.ability_id,
+              is_hidden: data.is_hidden,
+              slot: data.slot,
+            }
+        ))
+        .on('end', () => {
+          const insert =
+          database.pgp.helpers.insert(pokemonAbilsData,
+              database.pokemonAbilsColumns);
+          database.db.none(insert)
+              .then(() => resolve())
+              .catch((err) => {
+                console.log('Unable to ' +
+                  'load data into DB with error: ' + err);
+                reject();
+              });
+        });
+  });
+};
+
 /* Loads all damage data from CSV file expected
 to be in location is ./data/csv/damage_stats.csv.  It uses NPM
 package csv-parser. Data is inserted into one large batch after
@@ -322,5 +356,6 @@ module.exports = {
   loadAbilitiesData,
   loadSpeciesData,
   loadDamageData,
+  loadPokemonAbilitiesData,
 };
 

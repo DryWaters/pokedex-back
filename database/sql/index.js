@@ -43,4 +43,8 @@ module.exports = {
     dropTable: sql('damageStats/dropTable.sql'),
     createTable: sql('damageStats/createTable.sql'),
   },
+  pokemonAbils: {
+    dropTable: sql('pokemonAbils/dropTable.sql'),
+    createTable: sql('pokemonAbils/createTable.sql'),
+  },
 };

@@ -66,6 +66,13 @@ const speciesColumns = new pgp.helpers.ColumnSet([
   'species',
 ], {table: 'species'});
 
+const pokemonAbilsColumns = new pgp.helpers.ColumnSet([
+  'pokemon_id',
+  'ability_id',
+  'is_hidden',
+  'slot',
+], {table: 'pokemon_abils'});
+
 const damageColumns = new pgp.helpers.ColumnSet([
   'type_1',
   'type_2',
@@ -100,4 +107,5 @@ module.exports = {
   abilitiesColumns,
   speciesColumns,
   damageColumns,
+  pokemonAbilsColumns,
 };
