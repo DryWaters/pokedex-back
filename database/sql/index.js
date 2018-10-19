@@ -14,9 +14,6 @@ module.exports = {
     dropTable: sql('tables/pokemon/dropTable.sql'),
     createTable: sql('tables/pokemon/createTable.sql'),
   },
-  pokemonAll: {
-    selectAllWithRange: sql('pokemonAll/selectAllWithRange.sql'),
-  },
   pokemonTypes: {
     dropTable: sql('tables/pokemonTypes/dropTable.sql'),
     createTable: sql('tables/pokemonTypes/createTable.sql'),
@@ -48,5 +45,16 @@ module.exports = {
   pokemonAbils: {
     dropTable: sql('tables/pokemonAbils/dropTable.sql'),
     createTable: sql('tables/pokemonAbils/createTable.sql'),
+  },
+  pokemonAll: {
+    selectAllWithRange: sql('pokemonAll/selectAllWithRange.sql'),
+  },
+  pokemonDetail: {
+    selectAllFormsAndEvolutions:
+      sql('pokemonDetail/selectAllFormsAndEvolutions.sql'),
+    selectEvolutions: sql('pokemonDetail/selectEvolution.sql'),
+    selectForms: sql('pokemonDetail/selectForms.sql'),
+    selectMainPokemonForm: sql('pokemonDetail/selectMainPokemonForm.sql'),
+    selectWeaknesses: sql('pokemonDetail/selectWeaknesses.sql'),
   },
 };

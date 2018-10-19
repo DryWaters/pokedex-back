@@ -5,7 +5,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const utils = require('./database/utils');
-const pokemon = require('./routes/pokemon');
+const pokemonAll = require('./routes/pokemonAll');
+const pokemonDetails = require('./routes/pokemonDetails');
 const app = express();
 
 const favicon = require('serve-favicon');
@@ -20,7 +21,8 @@ app.use(cors());
 
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
-app.use('/pokemon', pokemon);
+app.use('/pokemon', pokemonAll);
+app.use('/pokemon', pokemonDetails);
 
 if (process.env.REBUILD_DATA && process.env.REBUILD_DATA === 'TRUE') {
   utils.rebuildData()
