@@ -13,6 +13,8 @@ module.exports = {
   pokemon: {
     dropTable: sql('tables/pokemon/dropTable.sql'),
     createTable: sql('tables/pokemon/createTable.sql'),
+  },
+  pokemonAll: {
     selectAllWithRange: sql('pokemonAll/selectAllWithRange.sql'),
   },
   pokemonTypes: {

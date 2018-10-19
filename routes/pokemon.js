@@ -35,7 +35,7 @@ router.get('/', (req, res, next) => {
   }
 
   // Within range, get data from DB and return parsed results
-  database.db.any(sql.pokemon.selectAllWithRange,
+  database.db.any(sql.pokemonAll.selectAllWithRange,
       [startingId, startingId + range - 1])
       .then((result) => {
         return res.status(200).json(parsePokemonResults(result));
