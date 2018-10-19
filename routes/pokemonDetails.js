@@ -28,14 +28,14 @@ router.get('/:id', (req, res, next) => {
 
   database.db.any(sql.pokemonDetail.selectAllFormsAndEvolutions, pokemonId)
       .then((result) => {
-        // Get all unique forms and evolutions for the particular pokemon
+      // Get all unique forms and evolutions for the particular pokemon
         const parsedIds = parseAllFormsAndEvolutions(result);
 
         // Promise for all keys (mainId, forms, evolutions);
         Promise.all(Object.keys(parsedIds).map((key) => {
           switch (key) {
             case 'mainId': {
-              return database.db.any(sql.pokemonDetail.selectForms, parsedIds[key]);
+              return database.db.any(sql.pokemonDetail.selectMainPokemon, parsedIds[key]);
             }
             case 'forms': {
               return Promise.all(parsedIds[key].map(((formId) => {
@@ -59,42 +59,124 @@ router.get('/:id', (req, res, next) => {
             }
           }
         }))
-            .then((promiseResult) => {
-              // console.log('Promise result 0 is ');
-              // console.log(promiseResult[0]);
-              // console.log('Promise result 1 is ');
-              // console.log(promiseResult[1]);
-              // console.log('Promise result 2 is ');
-              // console.log(promiseResult[2]);
-              // console.log('Promise result 3 is ');
-              // console.log(promiseResult[3]);
-              // console.log('Promise result 4 is ');
-              // console.log(promiseResult[4]);
-              return getWeaknesses(promiseResult);
+            .then((formsAndEvolutions) => {
+              return getWeaknesses(formsAndEvolutions);
             })
             .then((finalResult) => {
-              // console.log(finalResult);
-
-              return res.status(200).end('done');
+              return res.status(200).json(finalResult);
             });
       });
 });
 
-const getWeaknesses = (forms) => {
+const getWeaknesses = (formsAndEvolutions) => {
   // if does not have any additional forms, add the weaknesses to main form
-  new Promise((resolve, reject) => {
-    if (forms[4].length === 0) {
-      const types = getFormIds(forms[0]);
-      console.log(types);
-    } else {
-      const types = [];
-      forms[4].forEach((form) => {
-        types.push(getFormIds(form));
-      });
-      console.log(types);
-    }
-    resolve();
+
+  if (formsAndEvolutions[4].length === 0) {
+    const types = getFormIds(formsAndEvolutions[0]);
+    return database.db.any(sql.pokemonDetail.selectWeaknesses, [types.type_1, types.type_2])
+        .then((weaknesses) => {
+          formsAndEvolutions[0].weaknesses = [];
+          Object.keys(weaknesses[0]).forEach((col) => {
+            if (weaknesses[0][col] > 1) {
+              formsAndEvolutions[0].weaknesses.push(col);
+            }
+          });
+          return processFinalPokemonDetails(formsAndEvolutions);
+        });
+  } else {
+    const types = [];
+    formsAndEvolutions[4].forEach((form) => {
+      types.push(getFormIds(form));
+    });
+  }
+};
+
+const processFinalPokemonDetails = (forms) => {
+  let pokemonDetails;
+  if (forms[4].length === 0) {
+    pokemonDetails = {
+      id: forms[0][0].pokemon_id,
+      name: forms[0][0].pokemon_name,
+      description: forms[0][0].p_desc,
+      species: forms[0][0].species,
+      forms: processForm(forms[0]),
+      evolutions: forms[1].length > 0 ? processEvolutions(forms) : null,
+    };
+  }
+  return pokemonDetails;
+};
+
+const processEvolutions = (formData) => {
+  const evolutions = {
+    '1': formData[1].length > 0 ? processEvolution(formData[1]) : null,
+    '2': formData[2].length > 0 ? processEvolution(formData[2]) : null,
+    '3': formData[3].length > 0 ? processEvolution(formData[3]) : null,
+  };
+  return evolutions;
+};
+
+const processEvolution = (evolutionData) => {
+  const evolutions = [];
+  evolutionData.forEach((row, index) => {
+    addPokemon(evolutions, row);
   });
+  return evolutions;
+};
+
+const addPokemon = (evolutions, pokemons) => {
+  const pokemonEvolution = {
+    id: pokemons[0].pokemon_id,
+    name: pokemons[0].name,
+    types: [pokemons[0].type_name],
+    image_path: `${POKEMON.SPRITE_PATH}small/${pokemons[0].image_id}.png`,
+  };
+  pokemons.forEach((pokemon) => {
+    if (!pokemonEvolution.types.includes(pokemon.type_name)) {
+      pokemonEvolution.types.push(pokemon.type_name);
+    }
+  });
+  evolutions.push(pokemonEvolution);
+};
+
+const processForm = (formData) => {
+  const form = {
+    name: formData[0].pokemon_name,
+    types: [formData[0].type_name],
+    weaknesses: formData.weaknesses,
+    abilities: [{
+      name: formData[0].ability_name,
+      hidden: formData[0].is_hidden,
+    }],
+    stats: {
+      'hp': formData[0].hp,
+      'attack': formData[0].attack,
+      'defense': formData[0].defense,
+      'special-attack': formData[0].special_attack,
+      'special-defense': formData[0].special_defense,
+      'speed': formData[0].speed,
+    },
+    image_path: `${POKEMON.SPRITE_PATH}large/${formData[0].image_id}.png`,
+  };
+
+  formData.forEach((row, index) => {
+    if (index > 0 && !form.types.includes(row.type_name)) {
+      form.types.push(row.type_name);
+    }
+
+    if (index > 0 && !hasAbility(form.abilities, row.ability_name)) {
+      form.abilities.push({name: row.ability_name, hidden: row.is_hidden});
+    }
+  });
+  return form;
+};
+
+const hasAbility = (abilities, abilName) => {
+  for (let abil of abilities) {
+    if (abil.name == abilName) {
+      return true;
+    }
+  }
+  return false;
 };
 
 const getFormIds = (forms) => {
@@ -103,14 +185,10 @@ const getFormIds = (forms) => {
     type_2: 0,
   };
   forms.forEach((row) => {
-    if (row.slot !== null) {
-      if (row.slot === 1 && types.type_1 === 0) {
-        types.type_1 = row.type_id;
-      } else {
-        if (types.type_2 === 0) {
-          types.type_2 = row.type_id;
-        }
-      }
+    if (row.slot === 1 && types.type_1 === 0) {
+      types.type_1 = row.type_id;
+    } else if (row.slot === 2 && types.type_2 === 0) {
+      types.type_2 = row.type_id;
     }
   });
   return types;
