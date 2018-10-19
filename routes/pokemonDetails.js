@@ -117,10 +117,17 @@ const processEvolutions = (formData) => {
 
 const processEvolution = (evolutionData) => {
   const evolutions = [];
-  evolutionData.forEach((row, index) => {
+  evolutionData.forEach((row) => {
     addPokemon(evolutions, row);
   });
+  sortEvolutions(evolutions);
   return evolutions;
+};
+
+// Sort in place array of objects
+// https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
+const sortEvolutions = (evolutions) => {
+  evolutions.sort((a, b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0));
 };
 
 const addPokemon = (evolutions, pokemons) => {
