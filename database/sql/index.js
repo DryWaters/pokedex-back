@@ -11,40 +11,40 @@ const sql = (file) => {
 
 module.exports = {
   pokemon: {
-    dropTable: sql('pokemon/dropTable.sql'),
-    createTable: sql('pokemon/createTable.sql'),
-    selectAllWithRange: sql('pokemon/selectAllWithRange.sql'),
+    dropTable: sql('tables/pokemon/dropTable.sql'),
+    createTable: sql('tables/pokemon/createTable.sql'),
+    selectAllWithRange: sql('pokemonAll/selectAllWithRange.sql'),
   },
   pokemonTypes: {
-    dropTable: sql('pokemonTypes/dropTable.sql'),
-    createTable: sql('pokemonTypes/createTable.sql'),
+    dropTable: sql('tables/pokemonTypes/dropTable.sql'),
+    createTable: sql('tables/pokemonTypes/createTable.sql'),
   },
   types: {
-    dropTable: sql('types/dropTable.sql'),
-    createTable: sql('types/createTable.sql'),
+    dropTable: sql('tables/types/dropTable.sql'),
+    createTable: sql('tables/types/createTable.sql'),
   },
   pokemonDesc: {
-    dropTable: sql('pokemonDesc/dropTable.sql'),
-    createTable: sql('pokemonDesc/createTable.sql'),
+    dropTable: sql('tables/pokemonDesc/dropTable.sql'),
+    createTable: sql('tables/pokemonDesc/createTable.sql'),
   },
   evolutions: {
-    dropTable: sql('evolutions/dropTable.sql'),
-    createTable: sql('evolutions/createTable.sql'),
+    dropTable: sql('tables/evolutions/dropTable.sql'),
+    createTable: sql('tables/evolutions/createTable.sql'),
   },
   abilities: {
-    dropTable: sql('abilities/dropTable.sql'),
-    createTable: sql('abilities/createTable.sql'),
+    dropTable: sql('tables/abilities/dropTable.sql'),
+    createTable: sql('tables/abilities/createTable.sql'),
   },
   species: {
-    dropTable: sql('species/dropTable.sql'),
-    createTable: sql('species/createTable.sql'),
+    dropTable: sql('tables/species/dropTable.sql'),
+    createTable: sql('tables/species/createTable.sql'),
   },
   damageStats: {
-    dropTable: sql('damageStats/dropTable.sql'),
-    createTable: sql('damageStats/createTable.sql'),
+    dropTable: sql('tables/damageStats/dropTable.sql'),
+    createTable: sql('tables/damageStats/createTable.sql'),
   },
   pokemonAbils: {
-    dropTable: sql('pokemonAbils/dropTable.sql'),
-    createTable: sql('pokemonAbils/createTable.sql'),
+    dropTable: sql('tables/pokemonAbils/dropTable.sql'),
+    createTable: sql('tables/pokemonAbils/createTable.sql'),
   },
 };
