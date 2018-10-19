@@ -117,31 +117,31 @@ const processFinalPokemonDetailsWithForms = (forms) => {
     evolutions: forms[1].length > 0 ? processEvolutions(forms) : null,
   };
 
-  // forms[4].forEach((form) => {
-  pokemonDetails.forms.push(processPokemonForm(forms[4][0]));
-  // });
+  forms[4].forEach((form) => {
+    pokemonDetails.forms.push(processPokemonForm(form));
+  });
 
   return pokemonDetails;
 };
 
 const processPokemonForm = (formData) => {
   const form = {
-    name: formData.pokemon_name,
-    types: [formData.type_name],
+    name: formData[0].pokemon_name,
+    types: [formData[0].type_name],
     weaknesses: formData.weaknesses,
     abilities: [{
-      name: formData.ability_name,
-      hidden: formData.is_hidden,
+      name: formData[0].ability_name,
+      hidden: formData[0].is_hidden,
     }],
     stats: {
-      'hp': formData.hp,
-      'attack': formData.attack,
-      'defense': formData.defense,
-      'special-attack': formData.special_attack,
-      'special-defense': formData.special_defense,
-      'speed': formData.speed,
+      'hp': formData[0].hp,
+      'attack': formData[0].attack,
+      'defense': formData[0].defense,
+      'special-attack': formData[0].special_attack,
+      'special-defense': formData[0].special_defense,
+      'speed': formData[0].speed,
     },
-    image_path: `${POKEMON.SPRITE_PATH}large/${formData.image_id}.png`,
+    image_path: `${POKEMON.SPRITE_PATH}large/${formData[0].image_id}.png`,
   };
 
   formData.forEach((row, index) => {
