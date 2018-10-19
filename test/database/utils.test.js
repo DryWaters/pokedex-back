@@ -266,7 +266,7 @@ QUnit.test('Checks that pokemon type data is loaded', (assert) => {
         })
         .catch((err) => {
           asyncLoadSpeciesData();
-          assert.ok(false, `Unable to load type data with error ${err}`);
+          assert.ok(false, `Unable to load species data with error ${err}`);
         });
   });
 

@@ -17,6 +17,7 @@ const rebuildData = () => {
       .then(() => loadAbilitiesData())
       .then(() => loadSpeciesData())
       .then(() => loadDamageData())
+      .then(() => loadPokemonAbilitiesData())
       .catch((err) => console.log('Error creating database ' +
   'with error: ' + err));
 };
