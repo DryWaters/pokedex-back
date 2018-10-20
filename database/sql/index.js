@@ -56,5 +56,8 @@ module.exports = {
     selectMainPokemon: sql('pokemonDetail/selectMainPokemon.sql'),
     selectForms: sql('pokemonDetail/selectForms.sql'),
     selectWeaknesses: sql('pokemonDetail/selectWeaknesses.sql'),
+    selectTypeIds: sql('pokemonDetail/selectTypeIds.sql'),
+    selectTypeNames: sql('pokemonDetail/selectTypeNames.sql'),
+    selectAbilities: sql('pokemonDetail/selectAbilities.sql'),
   },
 };

@@ -35,32 +35,32 @@ router.get('/:id', (req, res, next) => {
         Promise.all(Object.keys(parsedIds).map((key) => {
           switch (key) {
             case 'mainId': {
-              return database.db.any(sql.pokemonDetail.selectMainPokemon, parsedIds[key]);
+              return getMainPokemonDetails(parsedIds[key]);
             }
             case 'forms': {
               return Promise.all(parsedIds[key].map(((formId) => {
-                return database.db.any(sql.pokemonDetail.selectForms, formId);
+                return getFormDetails(formId);
               })));
             }
             case 'evolve_1': {
               return Promise.all(parsedIds[key].map(((evolveId) => {
-                return database.db.any(sql.pokemonDetail.selectEvolutions, evolveId);
+                return getEvolutionDetails(evolveId);
               })));
             }
             case 'evolve_2': {
               return Promise.all(parsedIds[key].map(((evolveId) => {
-                return database.db.any(sql.pokemonDetail.selectEvolutions, evolveId);
+                return getEvolutionDetails(evolveId);
               })));
             }
             case 'evolve_3': {
               return Promise.all(parsedIds[key].map(((evolveId) => {
-                return database.db.any(sql.pokemonDetail.selectEvolutions, evolveId);
+                return getEvolutionDetails(evolveId);
               })));
             }
           }
         }))
-            .then((formsAndEvolutions) => {
-              return getWeaknesses(formsAndEvolutions);
+            .then((allData) => {
+              return parseData(allData);
             })
             .then((finalResult) => {
               return res.status(200).json(finalResult);
@@ -68,202 +68,205 @@ router.get('/:id', (req, res, next) => {
       });
 });
 
-const getWeaknesses = (formsAndEvolutions) => {
-  // if does not have any additional forms, add the weaknesses to main form
-  if (formsAndEvolutions[4].length === 0) {
-    const types = getFormIds(formsAndEvolutions[0]);
-    return database.db.any(sql.pokemonDetail.selectWeaknesses, [types.type_1, types.type_2])
-        .then((weaknesses) => {
-          formsAndEvolutions[0].weaknesses = [];
-          Object.keys(weaknesses[0]).forEach((col) => {
-            if (weaknesses[0][col] > 1) {
-              formsAndEvolutions[0].weaknesses.push(col);
-            }
-          });
-          return processFinalPokemonDetailsNoForms(formsAndEvolutions);
-        });
-  } else {
-    const types = [];
-    formsAndEvolutions[4].forEach((form) => {
-      types.push(getFormIds(form));
-    });
-    return Promise.all(types.map((pokemonTypes) => {
-      return database.db.any(sql.pokemonDetail.selectWeaknesses, [pokemonTypes.type_1, pokemonTypes.type_2]);
-    }))
-        .then((weaknesses) => {
-          formsAndEvolutions[4].forEach((form, index) => {
-            form.weaknesses = [];
-
-            Object.keys(weaknesses[index][0]).forEach((col) => {
-              if (weaknesses[index][0][col] > 1) {
-                form.weaknesses.push(col);
-              }
-            });
-          });
-          return processFinalPokemonDetailsWithForms(formsAndEvolutions);
-        });
-  }
-};
-
-const processFinalPokemonDetailsWithForms = (forms) => {
-  let pokemonDetails;
-
-  pokemonDetails = {
-    id: forms[0][0].pokemon_id,
-    name: forms[0][0].pokemon_name,
-    description: forms[0][0].p_desc,
-    species: forms[0][0].species,
+const parseData = (allData) => {
+  const pokemonDetails = {
     forms: [],
-    evolutions: forms[1].length > 0 ? processEvolutions(forms) : null,
-  };
-
-  forms[4].forEach((form) => {
-    pokemonDetails.forms.push(processPokemonForm(form));
-  });
-
-  return pokemonDetails;
-};
-
-const processPokemonForm = (formData) => {
-  const form = {
-    name: formData[0].pokemon_name,
-    types: [formData[0].type_name],
-    weaknesses: formData.weaknesses,
-    abilities: [{
-      name: formData[0].ability_name,
-      hidden: formData[0].is_hidden,
-    }],
-    stats: {
-      'hp': formData[0].hp,
-      'attack': formData[0].attack,
-      'defense': formData[0].defense,
-      'special-attack': formData[0].special_attack,
-      'special-defense': formData[0].special_defense,
-      'speed': formData[0].speed,
+    evolutions: {
+      1: [],
+      2: [],
+      3: [],
     },
-    image_path: `${POKEMON.SPRITE_PATH}large/${formData[0].image_id}.png`,
   };
 
-  formData.forEach((row, index) => {
-    if (index > 0 && !form.types.includes(row.type_name)) {
-      form.types.push(row.type_name);
-    }
+  // get main pokemon details
+  parseMainDetails(pokemonDetails, allData[0]);
 
-    if (index > 0 && !hasAbility(form.abilities, row.ability_name)) {
-      form.abilities.push({name: row.ability_name, hidden: row.is_hidden});
-    }
+  // get evolution1 details
+  if (allData[1].length > 0) {
+    pokemonDetails.evolutions[1] = parseEvolutionDetails(allData[1]);
+  } else {
+    pokemonDetails.evolutions[1] = null;
+  }
+
+  // get evolution2 details
+  if (allData[2].length > 0) {
+    pokemonDetails.evolutions[2] = parseEvolutionDetails(allData[2]);
+  } else {
+    pokemonDetails.evolutions[2] = null;
+  }
+
+  // get evolution3 details
+  if (allData[3].length > 0) {
+    pokemonDetails.evolutions[3] = parseEvolutionDetails(allData[3]);
+  } else {
+    pokemonDetails.evolutions[3] = null;
+  }
+
+  // if have no forms, get form data from main pokemon
+  if (allData[4].length === 0) {
+
+  }
+  console.log(pokemonDetails);
+
+  // console.log(pokemonDetails);
+
+
+  // // Evolution 2 (first - Main information : pokemon_id, name, image_id)
+  // console.log(allData[2][0][0]);
+  // // Evolution 2 (first - type information : Array [ name, slot ])
+  // console.log(allData[2][0][1]);
+
+  // // // Evolution 2 (second - Main information : pokemon_id, name, image_id)
+  // // console.log(allData[2][1][0]);
+  // // // Evolution 2 (second - type information : Array [ name, slot ])
+  // // console.log(allData[2][1][1]);
+
+  // // Evolution 3 (first - Main information : pokemon_id, name, image_id)
+  // console.log(allData[3][0][0]);
+  // // Evolution 3 (first - type information : Array [ name, slot ])
+  // console.log(allData[3][0][1]);
+
+  // Forms 1 (weaknesses)
+  // console.log(allData[4][0].weaknesses);
+  // Forms 1 (first - main information : pokemon_id, name, image_id)
+  // console.log(allData[4][0][0]);
+  // Forms 1 (second - type information : Array [ name, slot ])
+  // console.log(allData[4][0][1]);
+  // Forms 1 (third - abilities [ { name, is_hidden } ]
+  // console.log(allData[4][0][2]);
+  // console.log(allData[4][0][3]);
+};
+
+// main species data (pokemon_id, pokemon_name, p_desc, species, hp, attack, defense, special_attack, special_defense, speed, image_id)
+// console.log(data[0][0]);
+// main species types ([ name: , slot])
+// console.log(allData[1]);
+// main species ability 1 ([ name: is_hidden ])
+// console.log(allData[2]);
+const parseMainDetails = (pokemonDetails, data) => {
+  pokemonDetails.id = data[0][0].pokemon_id;
+  pokemonDetails.name = data[0][0].pokemon_name;
+  pokemonDetails.description = data[0][0].p_desc;
+  pokemonDetails.species = data[0][0].species;
+};
+
+// // Evolution (first - Main information : pokemon_id, name, image_id)
+// console.log(data[0][0]);
+// // Evolution (first - type information : Array [ name, slot ])
+// console.log(data[0][1]);
+const parseEvolutionDetails = (data) => {
+  const evolutionDetails = [];
+  data.forEach((evolution) => {
+    evolutionDetails.push({
+      id: evolution[0][0].pokemon_id,
+      name: evolution[0][0].name,
+      types: processTypes(evolution[1]),
+      image_path: `${POKEMON.SPRITE_PATH}small/${evolution[0][0].image_id}.png`,
+    });
   });
-  return form;
+  return evolutionDetails;
 };
 
-const processFinalPokemonDetailsNoForms = (forms) => {
-  let pokemonDetails;
+const processTypes = (typeData) => {
+  const types = [];
 
-  pokemonDetails = {
-    id: forms[0][0].pokemon_id,
-    name: forms[0][0].pokemon_name,
-    description: forms[0][0].p_desc,
-    species: forms[0][0].species,
-    forms: processMainPokemonForm(forms[0]),
-    evolutions: forms[1].length > 0 ? processEvolutions(forms) : null,
-  };
-
-  return pokemonDetails;
+  if (typeData.length === 1) {
+    types.push(typeData[0].name);
+  } else if (typeData[0].slot === 1) {
+    types.push(typeData[0].name);
+    types.push(typeData[1].name);
+  } else {
+    types.push(typeData[1].name);
+    types.push(typeData[0].name);
+  }
+  return types;
 };
 
-const processEvolutions = (formData) => {
-  const evolutions = {
-    '1': formData[1].length > 0 ? processEvolution(formData[1]) : null,
-    '2': formData[2].length > 0 ? processEvolution(formData[2]) : null,
-    '3': formData[3].length > 0 ? processEvolution(formData[3]) : null,
-  };
-  return evolutions;
+const getFormDetails = (pokemonId) => {
+  let formDetails = {};
+  return Promise.all([getFormData(pokemonId), getTypes(pokemonId),
+    getAbilities(pokemonId), getTypeIds(pokemonId)])
+      .then((results) => {
+        formDetails = results;
+        return getWeaknesses(results[3]);
+      })
+      .then((weaknesses) => {
+        formDetails.weaknesses = weaknesses;
+        return formDetails;
+      });
 };
 
-const processEvolution = (evolutionData) => {
-  const evolutions = [];
-  evolutionData.forEach((row) => {
-    addPokemon(evolutions, row);
-  });
-  sortEvolutions(evolutions);
-  return evolutions;
+const getFormData = (pokemonId) => {
+  return database.db.any(sql.pokemonDetail.selectForms, pokemonId);
 };
 
-// Sort in place array of objects
-// https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
-const sortEvolutions = (evolutions) => {
-  evolutions.sort((a, b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0));
+const getEvolutionDetails = (pokemonId) => {
+  return Promise.all([getEvolutionData(pokemonId), getTypes(pokemonId)])
+      .then((results) => {
+        return results;
+      });
 };
 
-const addPokemon = (evolutions, pokemons) => {
-  const pokemonEvolution = {
-    id: pokemons[0].pokemon_id,
-    name: pokemons[0].name,
-    types: [pokemons[0].type_name],
-    image_path: `${POKEMON.SPRITE_PATH}small/${pokemons[0].image_id}.png`,
-  };
-  pokemons.forEach((pokemon) => {
-    if (!pokemonEvolution.types.includes(pokemon.type_name)) {
-      pokemonEvolution.types.push(pokemon.type_name);
-    }
-  });
-  evolutions.push(pokemonEvolution);
+const getEvolutionData = (pokemonId) => {
+  return database.db.any(sql.pokemonDetail.selectEvolutions, pokemonId);
 };
 
-const processMainPokemonForm = (formData) => {
-  const form = {
-    name: formData[0].pokemon_name,
-    types: [formData[0].type_name],
-    weaknesses: formData.weaknesses,
-    abilities: [{
-      name: formData[0].ability_name,
-      hidden: formData[0].is_hidden,
-    }],
-    stats: {
-      'hp': formData[0].hp,
-      'attack': formData[0].attack,
-      'defense': formData[0].defense,
-      'special-attack': formData[0].special_attack,
-      'special-defense': formData[0].special_defense,
-      'speed': formData[0].speed,
-    },
-    image_path: `${POKEMON.SPRITE_PATH}large/${formData[0].image_id}.png`,
-  };
-
-  formData.forEach((row, index) => {
-    if (index > 0 && !form.types.includes(row.type_name)) {
-      form.types.push(row.type_name);
-    }
-
-    if (index > 0 && !hasAbility(form.abilities, row.ability_name)) {
-      form.abilities.push({name: row.ability_name, hidden: row.is_hidden});
-    }
-  });
-  return form;
+const getMainPokemonDetails = (pokemonId) => {
+  let mainPokemonDetails = {};
+  return Promise.all([getMainData(pokemonId), getTypes(pokemonId),
+    getAbilities(pokemonId), getTypeIds(pokemonId)])
+      .then((results) => {
+        mainPokemonDetails = results;
+        return getWeaknesses(results[3]);
+      })
+      .then((weaknesses) => {
+        mainPokemonDetails.weaknesses = weaknesses;
+        return mainPokemonDetails;
+      });
 };
 
-const hasAbility = (abilities, abilName) => {
-  for (let abil of abilities) {
-    if (abil.name == abilName) {
-      return true;
+const getMainData = (pokemonId) => {
+  return database.db.any(sql.pokemonDetail.selectMainPokemon, pokemonId);
+};
+
+const getTypes = (pokemonId) => {
+  return database.db.any(sql.pokemonDetail.selectTypeNames, pokemonId);
+};
+
+const getAbilities = (pokemonId) => {
+  return database.db.any(sql.pokemonDetail.selectAbilities, pokemonId);
+};
+
+const getTypeIds = (pokemonId) => {
+  return database.db.any(sql.pokemonDetail.selectTypeIds, pokemonId);
+};
+
+const getWeaknesses = (types) => {
+  let type1;
+  let type2;
+  const weakTypes = [];
+  // if does not have any additional forms, add the weaknesses to main form
+  if (types.length === 1) {
+    type1 = types[0].type_id;
+    type2 = 0;
+  } else {
+    if (types[0].slot === 1) {
+      type1 = types[0].type_id;
+      type2 = types[1].type_id;
+    } else {
+      type1 = types[1].type_id;
+      type2 = types[0].type_id;
     }
   }
-  return false;
-};
-
-const getFormIds = (forms) => {
-  const types = {
-    type_1: 0,
-    type_2: 0,
-  };
-  forms.forEach((row) => {
-    if (row.slot === 1 && types.type_1 === 0) {
-      types.type_1 = row.type_id;
-    } else if (row.slot === 2 && types.type_2 === 0) {
-      types.type_2 = row.type_id;
-    }
-  });
-  return types;
+  return database.db.any(sql.pokemonDetail.selectWeaknesses, [type1, type2])
+      .then((weaknesses) => {
+        Object.keys(weaknesses[0]).forEach((col) => {
+          if (weaknesses[0][col] > 1) {
+            weakTypes.push(col);
+          }
+        });
+        return weakTypes;
+      });
 };
 
 const parseAllFormsAndEvolutions = (resultSet) => {
