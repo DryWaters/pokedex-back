@@ -26,12 +26,13 @@ router.get('/:id', (req, res, next) => {
         });
   }
 
+  // valid pokemon ID, get detailed data
   database.db.any(sql.pokemonDetail.selectAllFormsAndEvolutions, pokemonId)
       .then((result) => {
-      // Get all unique forms and evolutions for the particular pokemon
+        // Get all unique forms and evolutions for the particular pokemon
         const parsedIds = parseAllFormsAndEvolutions(result);
 
-        // Promise for all keys (mainId, forms, evolutions);
+        // Create promises for all keys (mainId, forms, evolutions x3);
         Promise.all(Object.keys(parsedIds).map((key) => {
           switch (key) {
             case 'mainId': {
@@ -59,103 +60,118 @@ router.get('/:id', (req, res, next) => {
             }
           }
         }))
+            // Done getting data, now parse the data to expected return
             .then((allData) => {
               return parseData(allData);
             })
+            // All good!  Return results!
             .then((finalResult) => {
               return res.status(200).json(finalResult);
+            })
+            .catch((err) => {
+              console.log('Unable to get pokemon data, oops');
+              return res.status(404).json({
+                'errorCode': 404,
+                'error': 'Unable to get pokemon details data!',
+                'errorMessage': err,
+              });
             });
       });
 });
 
 const parseData = (allData) => {
-  const pokemonDetails = {
-    forms: [],
-    evolutions: {
-      1: [],
-      2: [],
-      3: [],
-    },
-  };
-
   // get main pokemon details
-  parseMainDetails(pokemonDetails, allData[0]);
+  const pokemonDetails = parseMainDetails(allData[0]);
 
-  // get evolution1 details
+  // get evolution_1 details, if available
   if (allData[1].length > 0) {
     pokemonDetails.evolutions[1] = parseEvolutionDetails(allData[1]);
   } else {
     pokemonDetails.evolutions[1] = null;
   }
 
-  // get evolution2 details
+  // get evolution2 details, if available
   if (allData[2].length > 0) {
     pokemonDetails.evolutions[2] = parseEvolutionDetails(allData[2]);
   } else {
     pokemonDetails.evolutions[2] = null;
   }
 
-  // get evolution3 details
+  // get evolution3 details, if available
   if (allData[3].length > 0) {
     pokemonDetails.evolutions[3] = parseEvolutionDetails(allData[3]);
   } else {
     pokemonDetails.evolutions[3] = null;
   }
 
-  // if have no forms, get form data from main pokemon
+  // if have no forms, get only form data from main pokemon information
   if (allData[4].length === 0) {
-
+    pokemonDetails.forms = parseFormDetails([allData[0]]);
+  } else {
+    pokemonDetails.forms = parseFormDetails(allData[4]);
   }
-  console.log(pokemonDetails);
 
-  // console.log(pokemonDetails);
-
-
-  // // Evolution 2 (first - Main information : pokemon_id, name, image_id)
-  // console.log(allData[2][0][0]);
-  // // Evolution 2 (first - type information : Array [ name, slot ])
-  // console.log(allData[2][0][1]);
-
-  // // // Evolution 2 (second - Main information : pokemon_id, name, image_id)
-  // // console.log(allData[2][1][0]);
-  // // // Evolution 2 (second - type information : Array [ name, slot ])
-  // // console.log(allData[2][1][1]);
-
-  // // Evolution 3 (first - Main information : pokemon_id, name, image_id)
-  // console.log(allData[3][0][0]);
-  // // Evolution 3 (first - type information : Array [ name, slot ])
-  // console.log(allData[3][0][1]);
-
-  // Forms 1 (weaknesses)
-  // console.log(allData[4][0].weaknesses);
-  // Forms 1 (first - main information : pokemon_id, name, image_id)
-  // console.log(allData[4][0][0]);
-  // Forms 1 (second - type information : Array [ name, slot ])
-  // console.log(allData[4][0][1]);
-  // Forms 1 (third - abilities [ { name, is_hidden } ]
-  // console.log(allData[4][0][2]);
-  // console.log(allData[4][0][3]);
+  return pokemonDetails;
 };
 
-// main species data (pokemon_id, pokemon_name, p_desc, species, hp, attack, defense, special_attack, special_defense, speed, image_id)
-// console.log(data[0][0]);
-// main species types ([ name: , slot])
-// console.log(allData[1]);
-// main species ability 1 ([ name: is_hidden ])
-// console.log(allData[2]);
-const parseMainDetails = (pokemonDetails, data) => {
-  pokemonDetails.id = data[0][0].pokemon_id;
-  pokemonDetails.name = data[0][0].pokemon_name;
-  pokemonDetails.description = data[0][0].p_desc;
-  pokemonDetails.species = data[0][0].species;
+// Process each form from given data
+const parseFormDetails = (formsData) => {
+  const forms = [];
+  formsData.forEach((form) => {
+    forms.push({
+      id: form[0][0].pokemon_id,
+      name: form[0][0].pokemon_name,
+      types: processTypes(form[1]),
+      weaknesses: form.weaknesses,
+      abilities: processAbilities(form[2]),
+      image_path: `${POKEMON.SPRITE_PATH}large/${form[0][0].image_id}.png`,
+    });
+  });
+
+  // Sort the final forms by ID to ensure order, then remove key
+  // 'id' as it is not needed
+  // https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
+  forms.sort((a, b) => (a.id > b.id) ? 1 :
+    ((b.id > a.id) ? -1 : 0));
+
+  forms.forEach((form) => {
+    delete form['id'];
+  });
+
+  return forms;
 };
 
-// // Evolution (first - Main information : pokemon_id, name, image_id)
-// console.log(data[0][0]);
-// // Evolution (first - type information : Array [ name, slot ])
-// console.log(data[0][1]);
+/* Parse the main pokemon information, data is expected to be in the format
+below.
+
+console.log(data[0][0]);
+    main species data (pokemon_id, pokemon_name, p_desc, species, hp, attack,
+    defense, special_attack, special_defense, speed, image_id) */
+const parseMainDetails = (data) => {
+  const mainDetails = {};
+  mainDetails.id = data[0][0].pokemon_id;
+  mainDetails.name = data[0][0].pokemon_name;
+  mainDetails.description = data[0][0].p_desc;
+  mainDetails.species = data[0][0].species;
+  mainDetails.forms = [];
+  mainDetails.evolutions = {
+    1: [],
+    2: [],
+    3: [],
+  };
+  return mainDetails;
+};
+
+/* Parse the evolution data, data is expected to be in the format
+below.
+
+console.log(data[0][0]);
+    Evolution (first - Main information : pokemon_id, name, image_id)
+console.log(data[0][1]);
+    Evolution (first - type information : Array [ name, slot ]) */
 const parseEvolutionDetails = (data) => {
   const evolutionDetails = [];
+
   data.forEach((evolution) => {
     evolutionDetails.push({
       id: evolution[0][0].pokemon_id,
@@ -164,24 +180,59 @@ const parseEvolutionDetails = (data) => {
       image_path: `${POKEMON.SPRITE_PATH}small/${evolution[0][0].image_id}.png`,
     });
   });
+
+  // Sort the final evolutions by ID to ensure order
+  // https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
+  evolutionDetails.sort((a, b) => (a.id > b.id) ? 1 :
+    ((b.id > a.id) ? -1 : 0));
+
   return evolutionDetails;
 };
 
+// Sorts the types by slot, then pushes just the name
+// onto a types array that is assigned to form, or evolution data
 const processTypes = (typeData) => {
   const types = [];
 
-  if (typeData.length === 1) {
-    types.push(typeData[0].name);
-  } else if (typeData[0].slot === 1) {
-    types.push(typeData[0].name);
-    types.push(typeData[1].name);
-  } else {
-    types.push(typeData[1].name);
-    types.push(typeData[0].name);
-  }
+  // Sort the types by slot to ensure order
+  // https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
+  typeData.sort((a, b) => (a.slot > b.slot) ? 1 :
+    ((b.slot > a.slot) ? -1 : 0));
+
+  typeData.forEach((type) => {
+    types.push(type.name);
+  });
+
   return types;
 };
 
+// Sorts the abilites by slot, then pushes the name and if
+// ability is hidden onto ability array.  Order is ensured by
+// sorted by slot id
+// The returned array is used on Forms data
+const processAbilities = (abilityData) => {
+  const abilities = [];
+
+  // Sort the abilities by slot to ensure order
+  // https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
+  abilityData.sort((a, b) => (a.slot > b.slot) ? 1 :
+    ((b.slot > a.slot) ? -1 : 0));
+
+  abilityData.forEach((ability) => {
+    abilities.push({
+      name: ability.name,
+      hidden: ability.is_hidden,
+    });
+  });
+
+  return abilities;
+};
+
+/* Fetch form details needed from database.
+Pulls in forms, types, abilities, and
+typeIds (Used by Weakenesses)
+After data is pulled in, weaknesses are
+calculated by using the type ids */
 const getFormDetails = (pokemonId) => {
   let formDetails = {};
   return Promise.all([getFormData(pokemonId), getTypes(pokemonId),
@@ -200,6 +251,8 @@ const getFormData = (pokemonId) => {
   return database.db.any(sql.pokemonDetail.selectForms, pokemonId);
 };
 
+/* Fetch evolution details needed from database.
+Pulls in evolution data and types */
 const getEvolutionDetails = (pokemonId) => {
   return Promise.all([getEvolutionData(pokemonId), getTypes(pokemonId)])
       .then((results) => {
@@ -211,6 +264,13 @@ const getEvolutionData = (pokemonId) => {
   return database.db.any(sql.pokemonDetail.selectEvolutions, pokemonId);
 };
 
+/* Fetch main pokemon details needed from database.
+Pulls in main data, types, abilities, and
+type ids (used for weakness calculations)
+
+After data is pulled in, weaknesses are
+calculated by using the type ids
+*/
 const getMainPokemonDetails = (pokemonId) => {
   let mainPokemonDetails = {};
   return Promise.all([getMainData(pokemonId), getTypes(pokemonId),
@@ -245,18 +305,20 @@ const getWeaknesses = (types) => {
   let type1;
   let type2;
   const weakTypes = [];
-  // if does not have any additional forms, add the weaknesses to main form
+
+  // Sort the types by slot to ensure order
+  // https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
+  types.sort((a, b) => (a.slot > b.slot) ? 1 :
+    ((b.slot > a.slot) ? -1 : 0));
+
+  // if does not have any additional forms, add type 0
+  // (does not exit, needed for query)
   if (types.length === 1) {
     type1 = types[0].type_id;
     type2 = 0;
   } else {
-    if (types[0].slot === 1) {
-      type1 = types[0].type_id;
-      type2 = types[1].type_id;
-    } else {
-      type1 = types[1].type_id;
-      type2 = types[0].type_id;
-    }
+    type1 = types[0].type_id;
+    type2 = types[1].type_id;
   }
   return database.db.any(sql.pokemonDetail.selectWeaknesses, [type1, type2])
       .then((weaknesses) => {
@@ -269,6 +331,7 @@ const getWeaknesses = (types) => {
       });
 };
 
+// Fetches the unique pokemon IDs for main pokemon, its forms, and evolutions
 const parseAllFormsAndEvolutions = (resultSet) => {
   const pokemonIds = {
     mainId: [],
