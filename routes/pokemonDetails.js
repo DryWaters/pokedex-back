@@ -324,7 +324,7 @@ const getWeaknesses = (types) => {
       .then((weaknesses) => {
         Object.keys(weaknesses[0]).forEach((col) => {
           if (weaknesses[0][col] > 1) {
-            weakTypes.push(col);
+            weakTypes.push({type: col, multiplier: weaknesses[0][col]});
           }
         });
         return weakTypes;
