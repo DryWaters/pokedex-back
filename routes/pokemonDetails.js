@@ -117,23 +117,14 @@ const parseData = (allData) => {
 // Process each form from given data
 const parseFormDetails = (formsData) => {
   const forms = [];
-  // console.log(formsData[0]);
   formsData.forEach((form) => {
-    // console.log(form[0][0]);
     forms.push({
       id: form[0][0].pokemon_id,
       name: form[0][0].pokemon_name,
       types: processTypes(form[1]),
       weaknesses: form.weaknesses,
       abilities: processAbilities(form[2]),
-      stats: {
-        'hp': form[0][0].hp,
-        'attack': form[0][0].attack,
-        'defense': form[0][0].defense,
-        'special-attack': form[0][0].special_attack,
-        'special-defense': form[0][0].special_defense,
-        'speed': form[0][0].speed,
-      },
+      stats: processStats(form[0][0]),
       image_path: `${POKEMON.SPRITE_PATH}large/${form[0][0].image_id}.png`,
     });
   });
@@ -149,6 +140,19 @@ const parseFormDetails = (formsData) => {
   });
 
   return forms;
+};
+
+const processStats = (data) => {
+  const stats = {
+    'hp': data.hp,
+    'attack': data.attack,
+    'defense': data.defense,
+    'special-attack': data.special_attack,
+    'special-defense': data.special_defense,
+    'speed': data.speed,
+  };
+
+  return stats;
 };
 
 /* Parse the main pokemon information, data is expected to be in the format
