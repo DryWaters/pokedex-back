@@ -80,7 +80,7 @@ const loadPokemonData = () => {
               .catch((err) => {
                 console.log('Unable to ' +
                  'load data into DB with error: ' + err);
-                reject();
+                reject('At pokemon data');
               });
         });
   });
@@ -108,7 +108,7 @@ const loadTypeData = () => {
               .catch((err) => {
                 console.log('Unable to ' +
                   'load data into DB with error: ' + err);
-                reject();
+                reject('At type data');
               });
         });
   });
@@ -168,7 +168,7 @@ const loadPokemonDescData = () => {
               .catch((err) => {
                 console.log('Unable to ' +
                  'load data into DB with error: ' + err);
-                reject();
+                reject('At pokemon desc data');
               });
         });
   });
@@ -199,7 +199,7 @@ const loadEvolutionData = () => {
               .catch((err) => {
                 console.log('Unable to ' +
                   'load data into DB with error: ' + err);
-                reject();
+                reject('At evolution data');
               });
         });
   });
@@ -229,7 +229,7 @@ const loadAbilitiesData = () => {
               .catch((err) => {
                 console.log('Unable to ' +
                   'load data into DB with error: ' + err);
-                reject();
+                reject('At abilities data');
               });
         });
   });
@@ -258,7 +258,7 @@ const loadSpeciesData = () => {
               .catch((err) => {
                 console.log('Unable to ' +
                   'load data into DB with error: ' + err);
-                reject();
+                reject('At species data');
               });
         });
   });
@@ -290,7 +290,7 @@ const loadPokemonAbilitiesData = () => {
               .catch((err) => {
                 console.log('Unable to ' +
                   'load data into DB with error: ' + err);
-                reject();
+                reject('At pokemon abilities data');
               });
         });
   });
@@ -337,7 +337,7 @@ const loadDamageData = () => {
               .catch((err) => {
                 console.log('Unable to ' +
                   'load data into DB with error: ' + err);
-                reject();
+                reject('At damage data');
               });
         });
   });
