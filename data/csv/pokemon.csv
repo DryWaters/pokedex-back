@@ -857,7 +857,7 @@ pokemon_id,name,species_id,image_id,evol_id,hp,attack,defense,special_attack,spe
 10048,Large Size,711,711,0,75,95,122,58,75,69
 10049,Super Size,711,711,0,85,100,122,58,75,54
 10050,Venusaur,3,3,0,80,82,83,100,100,80
-10051,Mega Venusaur,3,10033,0,80,100,123,122,120,80
+10051,Mega Venusaur,3,10051,0,80,100,123,122,120,80
 10052,Charizard,6,6,0,78,84,78,109,85,100
 10053,Mega Charizard X,6,10053,0,78,130,111,130,85,100
 10054,Mega Charizard Y,6,10054,0,78,104,78,159,115,100
