@@ -13,7 +13,7 @@ example to get one pokemon
 /pokemon?id=20&range=1
 example to get 20 pokemon
 /pokemon?id=500&range=20 */
-router.get('/', (req, res, next) => {
+router.get('/', (req, res) => {
   const startingId = parseInt(req.query.id);
   const range = parseInt(req.query.range);
   if (
@@ -37,9 +37,7 @@ router.get('/', (req, res, next) => {
   // Within range, get data from DB and return parsed results
   database.db.any(sql.pokemonAll.selectAllWithRange,
       [startingId, startingId + range - 1])
-      .then((result) => {
-        return res.status(200).json(parsePokemonResults(result));
-      })
+      .then((result) => res.status(200).json(parsePokemonResults(result)))
       .catch((error) => {
         console.error(`Unable to process request with error: ${error}`);
       });
