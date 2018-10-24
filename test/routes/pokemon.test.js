@@ -281,3 +281,23 @@ QUnit.test('Exceeds Range Pokemon Request, ' +
           'with error' + error);
       });
 });
+
+QUnit.test('Empty Pokemon Request, /pokemon/', (assert) => {
+  const assertAsync = assert.async();
+  request(app)
+      .get('/pokemon/')
+      .expect('Content-Type', /json/)
+      .expect('Content-Length', JSON.stringify(errorResult)
+          .length.toString())
+      .expect(404)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body, errorResult,
+            'JSON does not equal, actual: ' + response.body +
+            ' expected: ' + errorResult);
+      })
+      .catch((error) => {
+        assertAsync();
+        assert.ok(false, 'FAIL /pokemon/ with error' + error);
+      });
+});
