@@ -161,166 +161,166 @@ QUnit.test('Checks that pokemon type data is loaded', (assert) => {
         asyncLoadPokemonTypes();
         assert.ok(false, `Unable to load type data with error ${err}`);
       });
+});
 
-  QUnit.test('Checks that pokemon desc data is loaded', (assert) => {
-    const asyncLoadPokemonTypes = assert.async();
-    utils.clearDatabase()
-        .then(() => {
-          return utils.createTables();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM pokemon_desc');
-        })
-        .then((result) => {
-          assert.equal(result[0].count, '0', 'No pokemon desc =(');
-          return utils.loadPokemonDescData();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM pokemon_desc');
-        })
-        .then((result) => {
-          asyncLoadPokemonTypes();
-          assert.equal(result[0].count, POKEMON.NUMBER_OF_POKEMON,
-              'Lots of pokemon descriptions!');
-        })
-        .catch((err) => {
-          asyncLoadPokemonTypes();
-          assert.ok(false, `Unable to load type data with error ${err}`);
-        });
-  });
+QUnit.test('Checks that pokemon desc data is loaded', (assert) => {
+  const asyncLoadPokemonTypes = assert.async();
+  utils.clearDatabase()
+      .then(() => {
+        return utils.createTables();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM pokemon_desc');
+      })
+      .then((result) => {
+        assert.equal(result[0].count, '0', 'No pokemon desc =(');
+        return utils.loadPokemonDescData();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM pokemon_desc');
+      })
+      .then((result) => {
+        asyncLoadPokemonTypes();
+        assert.equal(result[0].count, POKEMON.NUMBER_OF_POKEMON,
+            'Lots of pokemon descriptions!');
+      })
+      .catch((err) => {
+        asyncLoadPokemonTypes();
+        assert.ok(false, `Unable to load type data with error ${err}`);
+      });
+});
 
-  QUnit.test('Checks that pokemon evolution data is loaded', (assert) => {
-    const asyncLoadEvolutionData = assert.async();
-    utils.clearDatabase()
-        .then(() => {
-          return utils.createTables();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM evolutions');
-        })
-        .then((result) => {
-          assert.equal(result[0].count, '0', 'No pokemon evolutions =(');
-          return utils.loadEvolutionData();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM evolutions');
-        })
-        .then((result) => {
-          asyncLoadEvolutionData();
-          assert.equal(result[0].count, POKEMON.NUMBER_OF_EVOLUTIONS,
-              'Lots of evolutions!');
-        })
-        .catch((err) => {
-          asyncLoadEvolutionData();
-          assert.ok(false, `Unable to load type data with error ${err}`);
-        });
-  });
+QUnit.test('Checks that pokemon evolution data is loaded', (assert) => {
+  const asyncLoadEvolutionData = assert.async();
+  utils.clearDatabase()
+      .then(() => {
+        return utils.createTables();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM evolutions');
+      })
+      .then((result) => {
+        assert.equal(result[0].count, '0', 'No pokemon evolutions =(');
+        return utils.loadEvolutionData();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM evolutions');
+      })
+      .then((result) => {
+        asyncLoadEvolutionData();
+        assert.equal(result[0].count, POKEMON.NUMBER_OF_EVOLUTIONS,
+            'Lots of evolutions!');
+      })
+      .catch((err) => {
+        asyncLoadEvolutionData();
+        assert.ok(false, `Unable to load type data with error ${err}`);
+      });
+});
 
-  QUnit.test('Checks that pokemon abilities data is loaded', (assert) => {
-    const asyncLoadAbilitiesData = assert.async();
-    utils.clearDatabase()
-        .then(() => {
-          return utils.createTables();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM abilities');
-        })
-        .then((result) => {
-          assert.equal(result[0].count, '0', 'No pokemon abilities =(');
-          return utils.loadAbilitiesData();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM abilities');
-        })
-        .then((result) => {
-          asyncLoadAbilitiesData();
-          assert.equal(result[0].count, POKEMON.NUMBER_OF_ABILITIES,
-              'Lots of abilities!');
-        })
-        .catch((err) => {
-          asyncLoadAbilitiesData();
-          assert.ok(false, `Unable to load type data with error ${err}`);
-        });
-  });
+QUnit.test('Checks that pokemon abilities data is loaded', (assert) => {
+  const asyncLoadAbilitiesData = assert.async();
+  utils.clearDatabase()
+      .then(() => {
+        return utils.createTables();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM abilities');
+      })
+      .then((result) => {
+        assert.equal(result[0].count, '0', 'No pokemon abilities =(');
+        return utils.loadAbilitiesData();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM abilities');
+      })
+      .then((result) => {
+        asyncLoadAbilitiesData();
+        assert.equal(result[0].count, POKEMON.NUMBER_OF_ABILITIES,
+            'Lots of abilities!');
+      })
+      .catch((err) => {
+        asyncLoadAbilitiesData();
+        assert.ok(false, `Unable to load type data with error ${err}`);
+      });
+});
 
-  QUnit.test('Checks that pokemon species data is loaded', (assert) => {
-    const asyncLoadSpeciesData = assert.async();
-    utils.clearDatabase()
-        .then(() => {
-          return utils.createTables();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM species');
-        })
-        .then((result) => {
-          assert.equal(result[0].count, '0', 'No pokemon species =(');
-          return utils.loadSpeciesData();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM species');
-        })
-        .then((result) => {
-          asyncLoadSpeciesData();
-          assert.equal(result[0].count, POKEMON.NUMBER_OF_POKEMON,
-              'Lots of abilities!');
-        })
-        .catch((err) => {
-          asyncLoadSpeciesData();
-          assert.ok(false, `Unable to load species data with error ${err}`);
-        });
-  });
+QUnit.test('Checks that pokemon species data is loaded', (assert) => {
+  const asyncLoadSpeciesData = assert.async();
+  utils.clearDatabase()
+      .then(() => {
+        return utils.createTables();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM species');
+      })
+      .then((result) => {
+        assert.equal(result[0].count, '0', 'No pokemon species =(');
+        return utils.loadSpeciesData();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM species');
+      })
+      .then((result) => {
+        asyncLoadSpeciesData();
+        assert.equal(result[0].count, POKEMON.NUMBER_OF_POKEMON,
+            'Lots of abilities!');
+      })
+      .catch((err) => {
+        asyncLoadSpeciesData();
+        assert.ok(false, `Unable to load species data with error ${err}`);
+      });
+});
 
-  QUnit.test('Checks that damage stat data is loaded', (assert) => {
-    const asyncLoadDamageStatData = assert.async();
-    utils.clearDatabase()
-        .then(() => {
-          return utils.createTables();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM damage_stats');
-        })
-        .then((result) => {
-          assert.equal(result[0].count, '0', 'No pokemon damage data =(');
-          return utils.loadDamageData();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM damage_stats');
-        })
-        .then((result) => {
-          asyncLoadDamageStatData();
-          assert.equal(result[0].count, POKEMON.NUMBER_OF_DAMAGE_TYPES,
-              'Lots of stats!');
-        })
-        .catch((err) => {
-          asyncLoadDamageStatData();
-          assert.ok(false, `Unable to load damage stat data with error ${err}`);
-        });
-  });
+QUnit.test('Checks that damage stat data is loaded', (assert) => {
+  const asyncLoadDamageStatData = assert.async();
+  utils.clearDatabase()
+      .then(() => {
+        return utils.createTables();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM damage_stats');
+      })
+      .then((result) => {
+        assert.equal(result[0].count, '0', 'No pokemon damage data =(');
+        return utils.loadDamageData();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM damage_stats');
+      })
+      .then((result) => {
+        asyncLoadDamageStatData();
+        assert.equal(result[0].count, POKEMON.NUMBER_OF_DAMAGE_TYPES,
+            'Lots of stats!');
+      })
+      .catch((err) => {
+        asyncLoadDamageStatData();
+        assert.ok(false, `Unable to load damage stat data with error ${err}`);
+      });
+});
 
-  QUnit.test('Checks that pokemon abilities data is loaded', (assert) => {
-    const asyncLoadPokemonAbilsData = assert.async();
-    utils.clearDatabase()
-        .then(() => {
-          return utils.createTables();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM pokemon_abils');
-        })
-        .then((result) => {
-          assert.equal(result[0].count, '0', 'No pokemon abilities data =(');
-          return utils.loadPokemonAbilitiesData();
-        })
-        .then(() => {
-          return database.db.any('SELECT COUNT(*) FROM pokemon_abils');
-        })
-        .then((result) => {
-          asyncLoadPokemonAbilsData();
-          assert.equal(result[0].count, POKEMON.TOTAL_POKEMON_WITH_ABILS,
-              'Lots of pokemon abils!');
-        })
-        .catch((err) => {
-          asyncLoadPokemonAbilsData();
-          assert.ok(false, `Unable to load poke abil data with error ${err}`);
-        });
-  });
+QUnit.test('Checks that pokemon abilities data is loaded', (assert) => {
+  const asyncLoadPokemonAbilsData = assert.async();
+  utils.clearDatabase()
+      .then(() => {
+        return utils.createTables();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM pokemon_abils');
+      })
+      .then((result) => {
+        assert.equal(result[0].count, '0', 'No pokemon abilities data =(');
+        return utils.loadPokemonAbilitiesData();
+      })
+      .then(() => {
+        return database.db.any('SELECT COUNT(*) FROM pokemon_abils');
+      })
+      .then((result) => {
+        asyncLoadPokemonAbilsData();
+        assert.equal(result[0].count, POKEMON.TOTAL_POKEMON_WITH_ABILS,
+            'Lots of pokemon abils!');
+      })
+      .catch((err) => {
+        asyncLoadPokemonAbilsData();
+        assert.ok(false, `Unable to load poke abil data with error ${err}`);
+      });
 });
