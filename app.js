@@ -3,7 +3,6 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
 const utils = require('./database/utils');
 const pokemonAll = require('./routes/pokemonAll');
 const pokemonDetails = require('./routes/pokemonDetails');
@@ -12,7 +11,6 @@ const app = express();
 const favicon = require('serve-favicon');
 const cors = require('cors');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
