@@ -16,9 +16,9 @@ QUnit.test('Valid Pokemon Request (no forms), /pokemon/1', (assert) => {
   const expectedResult = {
     'id': 1,
     'name': 'Bulbasaur',
-    'description': 'Bulbasaur can be seen napping in bright sunlight. There ' +
-      'is a seed on its back. By soaking up the sun\'s rays, the seed grows ' +
-      'progressively larger.',
+    'description': 'Bulbasaur can be seen napping in bright sunlight. ' +
+      'There is a seed on its back. By soaking up the sun\'s rays, ' +
+      'the seed grows progressively larger.',
     'species': 'Seed',
     'forms': [
       {
@@ -48,10 +48,13 @@ QUnit.test('Valid Pokemon Request (no forms), /pokemon/1', (assert) => {
         'abilities': [
           {
             'name': 'Overgrow',
+            'description': 'Strengthens grass moves to inflict 1.5× ' +
+              'damage at 1/3 max HP or less.',
             'hidden': false,
           },
           {
             'name': 'Chlorophyll',
+            'description': 'Doubles speed during strong sunlight.',
             'hidden': true,
           },
         ],
@@ -107,14 +110,13 @@ QUnit.test('Valid Pokemon Request (no forms), /pokemon/1', (assert) => {
   request(app)
       .get('/pokemon/1')
       .expect('Content-Type', /json/)
-      .expect('Content-Length', JSON.stringify(expectedResult)
-          .length.toString())
+      .expect('Content-Length', '1124')
       .expect(200)
       .then((response) => {
         assertAsync();
         assert.deepEqual(response.body, expectedResult,
             'JSON does not equal, actual: ' + response.body +
-            ' expected: ' + expectedResult);
+        ' expected: ' + expectedResult);
       })
       .catch((error) => {
         assertAsync();
@@ -126,10 +128,10 @@ QUnit.test('Valid Pokemon detail with forms, /pokemon/3', (assert) => {
   const expectedResult = {
     'id': 3,
     'name': 'Venusaur',
-    'description': 'There is a large flower on Venusaur\'s ' +
-    'back. The flower is said to take on vivid colors if it ' +
-    'gets plenty of nutrition and sunlight. The flower\'s ' +
-    'aroma soothes the emotions of people.',
+    'description': 'There is a large flower on Venusaur\'s back.' +
+      ' The flower is said to take on vivid colors if it gets plenty ' +
+      'of nutrition and sunlight. The flower\'s aroma soothes the ' +
+      'emotions of people.',
     'species': 'Seed',
     'forms': [
       {
@@ -159,10 +161,13 @@ QUnit.test('Valid Pokemon detail with forms, /pokemon/3', (assert) => {
         'abilities': [
           {
             'name': 'Overgrow',
+            'description': 'Strengthens grass moves to' +
+              ' inflict 1.5× damage at 1/3 max HP or less.',
             'hidden': false,
           },
           {
             'name': 'Chlorophyll',
+            'description': 'Doubles speed during strong sunlight.',
             'hidden': true,
           },
         ],
@@ -203,6 +208,7 @@ QUnit.test('Valid Pokemon detail with forms, /pokemon/3', (assert) => {
         'abilities': [
           {
             'name': 'Thick Fat',
+            'description': 'Halves damage from fire and ice moves.',
             'hidden': false,
           },
         ],
@@ -258,14 +264,13 @@ QUnit.test('Valid Pokemon detail with forms, /pokemon/3', (assert) => {
   request(app)
       .get('/pokemon/3')
       .expect('Content-Type', /json/)
-      .expect('Content-Length', JSON.stringify(expectedResult)
-          .length.toString())
+      .expect('Content-Length', '1632')
       .expect(200)
       .then((response) => {
         assertAsync();
         assert.deepEqual(response.body, expectedResult,
             'JSON does not equal, actual: ' + response.body +
-            ' expected: ' + expectedResult);
+        ' expected: ' + expectedResult);
       })
       .catch((error) => {
         assertAsync();
@@ -278,8 +283,8 @@ QUnit.test('Valid Pokemon detail w/ evolutions, /pokemon/133', (assert) => {
     'id': 133,
     'name': 'Eevee',
     'description': 'Eevee has an unstable genetic makeup that suddenly ' +
-    'mutates due to the environment in which it lives. Radiation from ' +
-    'various stones causes this Pokémon to evolve.',
+      'mutates due to the environment in which it lives. Radiation from ' +
+      'various stones causes this Pokémon to evolve.',
     'species': 'Evolution',
     'forms': [
       {
@@ -296,14 +301,20 @@ QUnit.test('Valid Pokemon detail w/ evolutions, /pokemon/133', (assert) => {
         'abilities': [
           {
             'name': 'Run Away',
+            'description': 'Ensures success fleeing from wild battles.',
             'hidden': false,
           },
           {
             'name': 'Adaptability',
+            'description': 'Increases the same-type attack bonus'+
+              ' from 1.5× to 2×.',
             'hidden': false,
           },
           {
             'name': 'Anticipation',
+            'description': 'Notifies all trainers upon entering battle if an ' +
+              'opponent has a super-effective move, self-destruct, ' +
+              'explosion, or a one-hit KO move.',
             'hidden': true,
           },
         ],
@@ -403,13 +414,13 @@ QUnit.test('Valid Pokemon detail w/ evolutions, /pokemon/133', (assert) => {
   request(app)
       .get('/pokemon/133')
       .expect('Content-Type', /json/)
-      .expect('Content-Length', '1459')
+      .expect('Content-Length', '1740')
       .expect(200)
       .then((response) => {
         assertAsync();
         assert.deepEqual(response.body, expectedResult,
             'JSON does not equal, actual: ' + response.body +
-            ' expected: ' + expectedResult);
+        ' expected: ' + expectedResult);
       })
       .catch((error) => {
         assertAsync();
@@ -430,7 +441,7 @@ QUnit.test('Invalid ID Pokemon Request, /pokemon/-1', (assert) => {
         assertAsync();
         assert.deepEqual(response.body, errorResult,
             'JSON does not equal, actual: ' + response.body +
-            ' expected: ' + errorResult);
+        ' expected: ' + errorResult);
       })
       .catch((error) => {
         assertAsync();
@@ -441,7 +452,7 @@ QUnit.test('Invalid ID Pokemon Request, /pokemon/-1', (assert) => {
 QUnit.test('Invalid empty ID Pokemon Request, /pokemon/808', (assert) => {
   const assertAsync = assert.async();
   request(app)
-      .get('/pokemon/'+ POKEMON.NUMBER_OF_POKEMON + 1)
+      .get('/pokemon/' + POKEMON.NUMBER_OF_POKEMON + 1)
       .expect('Content-Type', /json/)
       .expect('Content-Length', JSON.stringify(errorResult)
           .length.toString())
@@ -450,7 +461,7 @@ QUnit.test('Invalid empty ID Pokemon Request, /pokemon/808', (assert) => {
         assertAsync();
         assert.deepEqual(response.body, errorResult,
             'JSON does not equal, actual: ' + response.body +
-            ' expected: ' + errorResult);
+        ' expected: ' + errorResult);
       })
       .catch((error) => {
         assertAsync();
@@ -470,7 +481,7 @@ QUnit.test('Invalid character for ID, /pokemon/!', (assert) => {
         assertAsync();
         assert.deepEqual(response.body, errorResult,
             'JSON does not equal, actual: ' + response.body +
-            ' expected: ' + errorResult);
+        ' expected: ' + errorResult);
       })
       .catch((error) => {
         assertAsync();

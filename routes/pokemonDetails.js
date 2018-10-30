@@ -235,6 +235,7 @@ const processAbilities = (abilityData) => {
   abilityData.forEach((ability) => {
     abilities.push({
       name: ability.name,
+      description: ability.short_effect,
       hidden: ability.is_hidden,
     });
   });
