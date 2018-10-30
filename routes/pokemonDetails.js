@@ -164,7 +164,6 @@ console.log(data[0][0]);
     defense, special_attack, special_defense, speed, image_id) */
 const parseMainDetails = (data) => {
   const mainDetails = {};
-  console.log(data[4]);
   if (data[4].length !== 0) {
     mainDetails.previous = {
       id: data[4][0].pokemon_id,
