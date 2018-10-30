@@ -509,3 +509,51 @@ QUnit.test('Invalid character for ID, /pokemon/!', (assert) => {
         assert.ok(false, 'FAIL /pokemon/!' + error);
       });
 });
+
+QUnit.test('Does not have a previous pokemon, /pokemon/1', (assert) => {
+  const assertAsync = assert.async();
+  request(app)
+      .get('/pokemon/1')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.equal(response.body.previous, null, 'Should not have ' +
+      'previous pokemon');
+      });
+});
+
+QUnit.test('Does not have a next pokemon, /pokemon/807', (assert) => {
+  const assertAsync = assert.async();
+  request(app)
+      .get('/pokemon/807')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.equal(response.body.next, null, 'Should not have ' +
+      'next pokemon');
+      });
+});
+
+QUnit.test('Should have previous, /pokemon/500', (assert) => {
+  const assertAsync = assert.async();
+  request(app)
+      .get('/pokemon/500')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.notEqual(response.body.previous, null, 'Should have ' +
+      'previous pokemon');
+      });
+});
+
+QUnit.test('Should have next, /pokemon/500', (assert) => {
+  const assertAsync = assert.async();
+  request(app)
+      .get('/pokemon/500')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.notEqual(response.body.next, null, 'Should have ' +
+      'next pokemon');
+      });
+});
