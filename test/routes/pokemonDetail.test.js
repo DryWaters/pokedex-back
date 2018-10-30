@@ -14,6 +14,11 @@ QUnit.module('Pokemon Details Endpoint Testing');
 
 QUnit.test('Valid Pokemon Request (no forms), /pokemon/1', (assert) => {
   const expectedResult = {
+    'previous': null,
+    'next': {
+      'id': 2,
+      'name': 'Ivysaur',
+    },
     'id': 1,
     'name': 'Bulbasaur',
     'description': 'Bulbasaur can be seen napping in bright sunlight. ' +
@@ -48,8 +53,8 @@ QUnit.test('Valid Pokemon Request (no forms), /pokemon/1', (assert) => {
         'abilities': [
           {
             'name': 'Overgrow',
-            'description': 'Strengthens grass moves to inflict 1.5× ' +
-              'damage at 1/3 max HP or less.',
+            'description': 'Strengthens grass moves to ' +
+              'inflict 1.5× damage at 1/3 max HP or less.',
             'hidden': false,
           },
           {
@@ -110,7 +115,7 @@ QUnit.test('Valid Pokemon Request (no forms), /pokemon/1', (assert) => {
   request(app)
       .get('/pokemon/1')
       .expect('Content-Type', /json/)
-      .expect('Content-Length', '1124')
+      .expect('Content-Length', '1173')
       .expect(200)
       .then((response) => {
         assertAsync();
@@ -126,12 +131,20 @@ QUnit.test('Valid Pokemon Request (no forms), /pokemon/1', (assert) => {
 
 QUnit.test('Valid Pokemon detail with forms, /pokemon/3', (assert) => {
   const expectedResult = {
+    'previous': {
+      'id': 2,
+      'name': 'Ivysaur',
+    },
+    'next': {
+      'id': 4,
+      'name': 'Charmander',
+    },
     'id': 3,
     'name': 'Venusaur',
-    'description': 'There is a large flower on Venusaur\'s back.' +
-      ' The flower is said to take on vivid colors if it gets plenty ' +
-      'of nutrition and sunlight. The flower\'s aroma soothes the ' +
-      'emotions of people.',
+    'description': 'There is a large flower on Venusaur\'s back. ' +
+      'The flower is said to take on vivid colors if it gets plenty ' +
+      'of nutrition and sunlight. The flower\'s aroma soothes the' +
+      ' emotions of people.',
     'species': 'Seed',
     'forms': [
       {
@@ -161,8 +174,8 @@ QUnit.test('Valid Pokemon detail with forms, /pokemon/3', (assert) => {
         'abilities': [
           {
             'name': 'Overgrow',
-            'description': 'Strengthens grass moves to' +
-              ' inflict 1.5× damage at 1/3 max HP or less.',
+            'description': 'Strengthens grass moves to inflict 1.5× ' +
+              'damage at 1/3 max HP or less.',
             'hidden': false,
           },
           {
@@ -264,7 +277,7 @@ QUnit.test('Valid Pokemon detail with forms, /pokemon/3', (assert) => {
   request(app)
       .get('/pokemon/3')
       .expect('Content-Type', /json/)
-      .expect('Content-Length', '1632')
+      .expect('Content-Length', '1705')
       .expect(200)
       .then((response) => {
         assertAsync();
@@ -280,11 +293,19 @@ QUnit.test('Valid Pokemon detail with forms, /pokemon/3', (assert) => {
 
 QUnit.test('Valid Pokemon detail w/ evolutions, /pokemon/133', (assert) => {
   const expectedResult = {
+    'previous': {
+      'id': 132,
+      'name': 'Ditto',
+    },
+    'next': {
+      'id': 134,
+      'name': 'Vaporeon',
+    },
     'id': 133,
     'name': 'Eevee',
-    'description': 'Eevee has an unstable genetic makeup that suddenly ' +
-      'mutates due to the environment in which it lives. Radiation from ' +
-      'various stones causes this Pokémon to evolve.',
+    'description': 'Eevee has an unstable genetic makeup that suddenly' +
+      ' mutates due to the environment in which it lives. Radiation from' +
+      ' various stones causes this Pokémon to evolve.',
     'species': 'Evolution',
     'forms': [
       {
@@ -306,15 +327,15 @@ QUnit.test('Valid Pokemon detail w/ evolutions, /pokemon/133', (assert) => {
           },
           {
             'name': 'Adaptability',
-            'description': 'Increases the same-type attack bonus'+
-              ' from 1.5× to 2×.',
+            'description': 'Increases the same-type attack bonus ' +
+              'from 1.5× to 2×.',
             'hidden': false,
           },
           {
             'name': 'Anticipation',
-            'description': 'Notifies all trainers upon entering battle if an ' +
-              'opponent has a super-effective move, self-destruct, ' +
-              'explosion, or a one-hit KO move.',
+            'description': 'Notifies all trainers upon entering battle ' +
+              'if an opponent has a super-effective move, self-destruct,' +
+              ' explosion, or a one-hit KO move.',
             'hidden': true,
           },
         ],
@@ -414,7 +435,7 @@ QUnit.test('Valid Pokemon detail w/ evolutions, /pokemon/133', (assert) => {
   request(app)
       .get('/pokemon/133')
       .expect('Content-Type', /json/)
-      .expect('Content-Length', '1740')
+      .expect('Content-Length', '1813')
       .expect(200)
       .then((response) => {
         assertAsync();
