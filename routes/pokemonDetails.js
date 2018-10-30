@@ -36,7 +36,7 @@ router.get('/:id', (req, res, next) => {
         Promise.all(Object.keys(parsedIds).map((key) => {
           switch (key) {
             case 'mainId': {
-              return getMainPokemonDetails(parsedIds[key]);
+              return getMainPokemonDetails(parsedIds[key][0]);
             }
             case 'forms': {
               return Promise.all(parsedIds[key].map(((formId) => {
@@ -60,16 +60,17 @@ router.get('/:id', (req, res, next) => {
             }
           }
         }))
-            // Done getting data, now parse the data to expected return
+        // Done getting data, now parse the data to expected return
             .then((allData) => {
               return parseData(allData);
             })
-            // All good!  Return results!
+        // All good!  Return results!
             .then((finalResult) => {
               return res.status(200).json(finalResult);
             })
             .catch((err) => {
-              console.log('Unable to get pokemon data, oops');
+              console.log('Unable to get pokemon data, oops with error: '
+                + err);
               return res.status(404).json({
                 'errorCode': 404,
                 'error': 'Unable to get pokemon details data!',
@@ -163,6 +164,23 @@ console.log(data[0][0]);
     defense, special_attack, special_defense, speed, image_id) */
 const parseMainDetails = (data) => {
   const mainDetails = {};
+  console.log(data[4]);
+  if (data[4].length !== 0) {
+    mainDetails.previous = {
+      id: data[4][0].pokemon_id,
+      name: data[4][0].pokemon_name,
+    };
+  } else {
+    mainDetails.previous = null;
+  }
+  if (data[5].length !== 0) {
+    mainDetails.next = {
+      id: data[5][0].pokemon_id,
+      name: data[5][0].pokemon_name,
+    };
+  } else {
+    mainDetails.next = null;
+  }
   mainDetails.id = data[0][0].pokemon_id;
   mainDetails.name = data[0][0].pokemon_name;
   mainDetails.description = data[0][0].p_desc;
@@ -288,8 +306,10 @@ calculated by using the type ids
 */
 const getMainPokemonDetails = (pokemonId) => {
   let mainPokemonDetails = {};
+
   return Promise.all([getMainData(pokemonId), getTypes(pokemonId),
-    getAbilities(pokemonId), getTypeIds(pokemonId)])
+    getAbilities(pokemonId), getTypeIds(pokemonId),
+    getNavigation(pokemonId - 1), getNavigation(pokemonId + 1)])
       .then((results) => {
         mainPokemonDetails = results;
         return getWeaknesses(results[3]);
@@ -314,6 +334,10 @@ const getAbilities = (pokemonId) => {
 
 const getTypeIds = (pokemonId) => {
   return database.db.any(sql.pokemonDetail.selectTypeIds, pokemonId);
+};
+
+const getNavigation = (pokemonId) => {
+  return database.db.any(sql.pokemonDetail.selectNavigation, pokemonId);
 };
 
 const getWeaknesses = (types) => {
