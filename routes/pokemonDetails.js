@@ -164,6 +164,9 @@ console.log(data[0][0]);
     defense, special_attack, special_defense, speed, image_id) */
 const parseMainDetails = (data) => {
   const mainDetails = {};
+
+  // If has a previous pokemon
+  // data[4] == previous
   if (data[4].length !== 0) {
     mainDetails.previous = {
       id: data[4][0].pokemon_id,
@@ -172,6 +175,9 @@ const parseMainDetails = (data) => {
   } else {
     mainDetails.previous = null;
   }
+
+  // If has a next pokemon
+  // data[5] == next
   if (data[5].length !== 0) {
     mainDetails.next = {
       id: data[5][0].pokemon_id,
