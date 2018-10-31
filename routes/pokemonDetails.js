@@ -18,66 +18,66 @@ router.get('/:id', (req, res, next) => {
     pokemonId > POKEMON.NUMBER_OF_POKEMON
   ) {
     return res.status(404)
-        .json({
-          'error': 'Invalid id',
-          'expected id': {
-            'id': `1-${POKEMON.NUMBER_OF_POKEMON}`,
-          },
-        });
+      .json({
+        'error': 'Invalid id',
+        'expected id': {
+          'id': `1-${POKEMON.NUMBER_OF_POKEMON}`,
+        },
+      });
   }
 
   // valid pokemon ID, get detailed data
   database.db.any(sql.pokemonDetail.selectAllFormsAndEvolutions, pokemonId)
-      .then((result) => {
-        // Get all unique forms and evolutions for the particular pokemon
-        const parsedIds = parseAllFormsAndEvolutions(result);
+    .then((result) => {
+      // Get all unique forms and evolutions for the particular pokemon
+      const parsedIds = parseAllFormsAndEvolutions(result);
 
-        // Create promises for all keys (mainId, forms, evolutions x3);
-        Promise.all(Object.keys(parsedIds).map((key) => {
-          switch (key) {
-            case 'mainId': {
-              return getMainPokemonDetails(parsedIds[key][0]);
-            }
-            case 'forms': {
-              return Promise.all(parsedIds[key].map(((formId) => {
-                return getFormDetails(formId);
-              })));
-            }
-            case 'evolve_1': {
-              return Promise.all(parsedIds[key].map(((evolveId) => {
-                return getEvolutionDetails(evolveId);
-              })));
-            }
-            case 'evolve_2': {
-              return Promise.all(parsedIds[key].map(((evolveId) => {
-                return getEvolutionDetails(evolveId);
-              })));
-            }
-            case 'evolve_3': {
-              return Promise.all(parsedIds[key].map(((evolveId) => {
-                return getEvolutionDetails(evolveId);
-              })));
-            }
+      // Create promises for all keys (mainId, forms, evolutions x3);
+      Promise.all(Object.keys(parsedIds).map((key) => {
+        switch (key) {
+          case 'mainId': {
+            return getMainPokemonDetails(parsedIds[key][0]);
           }
-        }))
+          case 'forms': {
+            return Promise.all(parsedIds[key].map(((formId) => {
+              return getFormDetails(formId);
+            })));
+          }
+          case 'evolve_1': {
+            return Promise.all(parsedIds[key].map(((evolveId) => {
+              return getEvolutionDetails(evolveId);
+            })));
+          }
+          case 'evolve_2': {
+            return Promise.all(parsedIds[key].map(((evolveId) => {
+              return getEvolutionDetails(evolveId);
+            })));
+          }
+          case 'evolve_3': {
+            return Promise.all(parsedIds[key].map(((evolveId) => {
+              return getEvolutionDetails(evolveId);
+            })));
+          }
+        }
+      }))
         // Done getting data, now parse the data to expected return
-            .then((allData) => {
-              return parseData(allData);
-            })
+        .then((allData) => {
+          return parseData(allData);
+        })
         // All good!  Return results!
-            .then((finalResult) => {
-              return res.status(200).json(finalResult);
-            })
-            .catch((err) => {
-              console.log('Unable to get pokemon data, oops with error: '
-                + err);
-              return res.status(404).json({
-                'errorCode': 404,
-                'error': 'Unable to get pokemon details data!',
-                'errorMessage': err,
-              });
-            });
-      });
+        .then((finalResult) => {
+          return res.status(200).json(finalResult);
+        })
+        .catch((err) => {
+          console.log('Unable to get pokemon data, oops with error: '
+            + err);
+          return res.status(404).json({
+            'errorCode': 404,
+            'error': 'Unable to get pokemon details data!',
+            'errorMessage': err,
+          });
+        });
+    });
 });
 
 const parseData = (allData) => {
@@ -173,7 +173,10 @@ const parseMainDetails = (data) => {
       name: data[4][0].pokemon_name,
     };
   } else {
-    mainDetails.previous = null;
+    mainDetails.previous = {
+      id: 807,
+      name: 'Zeraora'
+    };
   }
 
   // If has a next pokemon
@@ -184,7 +187,10 @@ const parseMainDetails = (data) => {
       name: data[5][0].pokemon_name,
     };
   } else {
-    mainDetails.next = null;
+    mainDetails.next = {
+      id: 1,
+      name: 'Bulbasaur'
+    };
   }
   mainDetails.id = data[0][0].pokemon_id;
   mainDetails.name = data[0][0].pokemon_name;
@@ -274,15 +280,15 @@ calculated by using the type ids */
 const getFormDetails = (pokemonId) => {
   let formDetails = {};
   return Promise.all([getFormData(pokemonId), getTypes(pokemonId),
-    getAbilities(pokemonId), getTypeIds(pokemonId)])
-      .then((results) => {
-        formDetails = results;
-        return getWeaknesses(results[3]);
-      })
-      .then((weaknesses) => {
-        formDetails.weaknesses = weaknesses;
-        return formDetails;
-      });
+  getAbilities(pokemonId), getTypeIds(pokemonId)])
+    .then((results) => {
+      formDetails = results;
+      return getWeaknesses(results[3]);
+    })
+    .then((weaknesses) => {
+      formDetails.weaknesses = weaknesses;
+      return formDetails;
+    });
 };
 
 const getFormData = (pokemonId) => {
@@ -293,9 +299,9 @@ const getFormData = (pokemonId) => {
 Pulls in evolution data and types */
 const getEvolutionDetails = (pokemonId) => {
   return Promise.all([getEvolutionData(pokemonId), getTypes(pokemonId)])
-      .then((results) => {
-        return results;
-      });
+    .then((results) => {
+      return results;
+    });
 };
 
 const getEvolutionData = (pokemonId) => {
@@ -313,16 +319,16 @@ const getMainPokemonDetails = (pokemonId) => {
   let mainPokemonDetails = {};
 
   return Promise.all([getMainData(pokemonId), getTypes(pokemonId),
-    getAbilities(pokemonId), getTypeIds(pokemonId),
-    getNavigation(pokemonId - 1), getNavigation(pokemonId + 1)])
-      .then((results) => {
-        mainPokemonDetails = results;
-        return getWeaknesses(results[3]);
-      })
-      .then((weaknesses) => {
-        mainPokemonDetails.weaknesses = weaknesses;
-        return mainPokemonDetails;
-      });
+  getAbilities(pokemonId), getTypeIds(pokemonId),
+  getNavigation(pokemonId - 1), getNavigation(pokemonId + 1)])
+    .then((results) => {
+      mainPokemonDetails = results;
+      return getWeaknesses(results[3]);
+    })
+    .then((weaknesses) => {
+      mainPokemonDetails.weaknesses = weaknesses;
+      return mainPokemonDetails;
+    });
 };
 
 const getMainData = (pokemonId) => {
@@ -365,14 +371,14 @@ const getWeaknesses = (types) => {
     type2 = types[1].type_id;
   }
   return database.db.any(sql.pokemonDetail.selectWeaknesses, [type1, type2])
-      .then((weaknesses) => {
-        Object.keys(weaknesses[0]).forEach((col) => {
-          if (weaknesses[0][col] > 1) {
-            weakTypes.push({type: col, multiplier: weaknesses[0][col]});
-          }
-        });
-        return weakTypes;
+    .then((weaknesses) => {
+      Object.keys(weaknesses[0]).forEach((col) => {
+        if (weaknesses[0][col] > 1) {
+          weakTypes.push({ type: col, multiplier: weaknesses[0][col] });
+        }
       });
+      return weakTypes;
+    });
 };
 
 // Fetches the unique pokemon IDs for main pokemon, its forms, and evolutions
