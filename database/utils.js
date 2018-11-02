@@ -1,11 +1,28 @@
+/**
+ * @fileoverview Contains all table creation and data
+ * insertion for Pokemon data.
+ * Uses PGPPromise {@link https://vitaly-t.github.io/pg-promise/helpers.html|Insert}
+ * helper for mass data insertion, much faster than transactions
+ *
+ * Also uses CSV-Parser NPM Package to parse CSV files for insertion
+ * @see https://www.npmjs.com/package/csv-parser
+ */
+
 const database = require('./db');
 const fs = require('fs');
 const csv = require('csv-parser');
 const sql = require('./sql');
 
-/* Rebuilds entire pokemon database tables and inserts all data
- Uses promise chaining to complete each async task one after one another
- TODO:  Allow dynamic creation of definition from an object or array. */
+/**
+ * 1. Drops all Pokemon data tables if they exist
+ * 2. Creates new tables
+ * 3. Loads Pokemon data one after another using Promises
+ *
+ * It returns a Promise to use .then() to know when all
+ * subtasks are complete
+ *
+ * @return {Promise} Promise to know when all subtasks are complete
+ */
 const rebuildData = () => {
   return clearDatabase()
       .then(() => createTables())
@@ -19,10 +36,13 @@ const rebuildData = () => {
       .then(() => loadDamageData())
       .then(() => loadPokemonAbilitiesData())
       .catch((err) => console.log('Error creating database ' +
-  'with error: ' + err));
+      'with error: ' + err));
 };
 
-// Drops all tables if they exist
+/**
+ * Drops all tables if they exist
+ * @return {Promise} Promise to know when all subtasks are complete
+ */
 const clearDatabase = () => {
   return database.db.none(sql.types.dropTable)
       .then(() => database.db.none(sql.pokemonTypes.dropTable))
@@ -35,7 +55,10 @@ const clearDatabase = () => {
       .then(() => database.db.none(sql.abilities.dropTable));
 };
 
-// Create all tables and primary keys
+/**
+ * Creates all tables
+ * @return {Promise} Promise to know when all subtasks are complete
+ */
 const createTables = () => {
   return database.db.none(sql.pokemonTypes.createTable)
       .then(() => database.db.none(sql.types.createTable))
@@ -48,10 +71,13 @@ const createTables = () => {
       .then(() => database.db.none(sql.abilities.createTable));
 };
 
-/* Loads all pokemon data from CSV file expected to be in location is
-./data/csv/pokemon.csv.  It uses NPM package csv-parser. Data is inserted
-into one large batch after all data has been added to an array.
-*/
+/**
+ * Loads the data for the Pokemon table.
+ * It is wrapped in a Promise to allow chaining of the next
+ * task after all data is inserted.
+ *
+ * @return {Promise} Promise to know when all data is inserted
+ */
 const loadPokemonData = () => {
   return new Promise((resolve, reject) => {
     let pokemonData = [];
@@ -74,21 +100,25 @@ const loadPokemonData = () => {
         ))
         .on('end', () => {
           const insert =
-            database.pgp.helpers.insert(pokemonData, database.pokemonColumns);
+          database.pgp.helpers.insert(pokemonData, database.pokemonColumns);
           database.db.none(insert)
               .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
-                 'load data into DB with error: ' + err);
+              'load data into DB with error: ' + err);
                 reject('At pokemon data');
               });
         });
   });
 };
 
-/* Loads all type definition data from CSV file expected to be in location is
-./data/csv/types.csv.  It uses NPM package csv-parser. Data is inserted
-into one large batch after all data has been added to an array. */
+/**
+ * Loads the data for the Type table.
+ * It is wrapped in a Promise to allow chaining of the next
+ * task after all data is inserted.
+ *
+ * @return {Promise} Promise to know when all data is inserted
+ */
 const loadTypeData = () => {
   return new Promise((resolve, reject) => {
     let typeData = [];
@@ -107,16 +137,20 @@ const loadTypeData = () => {
               .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
-                  'load data into DB with error: ' + err);
+              'load data into DB with error: ' + err);
                 reject('At type data');
               });
         });
   });
 };
 
-/* Loads all pokemon types data from CSV file expected to be in location is
-./data/csv/pokemon_types.csv.  It uses NPM package csv-parser. Data is inserted
-into one large batch after all data has been added to an array. */
+/**
+ * Loads the data for the PokemonType table.
+ * It is wrapped in a Promise to allow chaining of the next
+ * task after all data is inserted.
+ *
+ * @return {Promise} Promise to know when all data is inserted
+ */
 const loadPokemonTypeData = () => {
   return new Promise((resolve, reject) => {
     let pokemonTypeData = [];
@@ -137,22 +171,31 @@ const loadPokemonTypeData = () => {
               .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
-                  'load data into DB with error: ' + err);
+              'load data into DB with error: ' + err);
                 reject('At pokemon type data');
               });
         });
   });
 };
 
-/* Loads all pokemon description data from CSV file expected to be in
-location ./data/csv/pokemon_desc.csv.  It uses NPM package csv-parser.
-Data is inserted into one large batch after all data has been added to an array.
-*/
+
+/**
+ * Loads the data for the PokemonDesc table.
+ * When using CSV-Parser it has a weird bug
+ * It is wrapped in a Promise to allow chaining of the next
+ * task after all data is inserted.
+ *
+ * @return {Promise} Promise to know when all data is inserted
+ */
 const loadPokemonDescData = () => {
   return new Promise((resolve, reject) => {
     let pokemonDescData = [];
     fs.createReadStream('./data/csv/pokemon_desc.csv')
-        .pipe(csv({separator: '`'}))
+        .pipe(csv(
+            {
+              separator: '`',
+              mapHeaders: ({header}) => header.trim(),
+            }))
         .on('data', (data) => pokemonDescData.push(
             {
               pokemon_id: data.pokemon_id,
@@ -161,13 +204,13 @@ const loadPokemonDescData = () => {
         ))
         .on('end', () => {
           const insert =
-            database.pgp.helpers.insert(pokemonDescData,
-                database.pokemonDescColumns);
+          database.pgp.helpers.insert(pokemonDescData,
+              database.pokemonDescColumns);
           database.db.none(insert)
               .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
-                 'load data into DB with error: ' + err);
+              'load data into DB with error: ' + err);
                 reject('At pokemon desc data');
               });
         });
@@ -198,7 +241,7 @@ const loadEvolutionData = () => {
               .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
-                  'load data into DB with error: ' + err);
+              'load data into DB with error: ' + err);
                 reject('At evolution data');
               });
         });
@@ -213,7 +256,11 @@ const loadAbilitiesData = () => {
   return new Promise((resolve, reject) => {
     let abilitiesData = [];
     fs.createReadStream('./data/csv/abilities.csv')
-        .pipe(csv({separator: '`'}))
+        .pipe(csv(
+            {
+              separator: '`',
+              mapHeaders: ({header}) => header.trim(),
+            }))
         .on('data', (data) => abilitiesData.push(
             {
               abil_id: data.abil_id,
@@ -228,7 +275,7 @@ const loadAbilitiesData = () => {
               .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
-                  'load data into DB with error: ' + err);
+              'load data into DB with error: ' + err);
                 reject('At abilities data');
               });
         });
@@ -257,7 +304,7 @@ const loadSpeciesData = () => {
               .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
-                  'load data into DB with error: ' + err);
+              'load data into DB with error: ' + err);
                 reject('At species data');
               });
         });
@@ -289,7 +336,7 @@ const loadPokemonAbilitiesData = () => {
               .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
-                  'load data into DB with error: ' + err);
+              'load data into DB with error: ' + err);
                 reject('At pokemon abilities data');
               });
         });
@@ -304,7 +351,10 @@ const loadDamageData = () => {
   return new Promise((resolve, reject) => {
     let damageData = [];
     fs.createReadStream('./data/csv/damage_stats.csv')
-        .pipe(csv())
+        .pipe(csv(
+            {
+              mapHeaders: ({header}) => header.trim(),
+            }))
         .on('data', (data) => damageData.push(
             {
               type_1: data.type_1,
@@ -336,15 +386,18 @@ const loadDamageData = () => {
               .then(() => resolve())
               .catch((err) => {
                 console.log('Unable to ' +
-                  'load data into DB with error: ' + err);
+              'load data into DB with error: ' + err);
                 reject('At damage data');
               });
         });
   });
 };
 
-// Exports all functions so they can be tested, only function needed
-// by main application is the rebuildData() that calls all other functions
+
+/**
+ * Exports all functions so they can be tested, only function needed
+ * by main application is the rebuildData() that calls all other functions
+ */
 module.exports = {
   rebuildData,
   clearDatabase,
