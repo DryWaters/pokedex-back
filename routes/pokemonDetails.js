@@ -77,6 +77,15 @@ router.get('/:id', (req, res, next) => {
             'errorMessage': err,
           });
         });
+    })
+    .catch((err) => {
+      console.log('Unable to get pokemon data, oops with error: '
+        + err);
+      return res.status(404).json({
+        'errorCode': 404,
+        'error': 'Unable to get pokemon details data!',
+        'errorMessage': err,
+      });
     });
 });
 
