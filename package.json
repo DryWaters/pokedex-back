@@ -11,18 +11,18 @@
   "dependencies": {
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.4",
-    "csv-parser": "^1.12.1",
+    "csv-parser": "^2.1.0",
     "debug": "~2.6.9",
-    "dotenv": "^6.0.0",
-    "express": "~4.16.0",
-    "pg-promise": "^8.4.6",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "pg-promise": "^8.5.1",
     "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
-    "eslint": "^5.6.0",
-    "eslint-config-google": "^0.10.0",
-    "nodemon": "^1.18.4",
     "async": "^2.6.1",
+    "eslint": "^5.8.0",
+    "eslint-config-google": "^0.10.0",
+    "nodemon": "^1.18.5",
     "supertest": "^3.3.0"
   }
 }
