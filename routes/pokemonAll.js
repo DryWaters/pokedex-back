@@ -80,8 +80,8 @@ const validSearch = (queries) => {
     id: () => isValidIdAndRange(queries),
     range: () => isValidIdAndRange(queries),
     types: () => isValidTypes(queries.types),
-    // ability: checkAbility(queries.ability),
-    // name: checkName(queries.name)
+    ability: () => checkAbility(queries.ability),
+    name: () => checkName(queries.name),
   };
 
   for (let query of Object.keys(queries)) {
@@ -115,6 +115,14 @@ const isValidTypes = (types) => {
   };
 
   return true;
+};
+
+const checkAbility = (ability) => {
+  return ability.length > 0;
+};
+
+const checkName = (name) => {
+  return name.length > 0;
 };
 
 module.exports = router;
