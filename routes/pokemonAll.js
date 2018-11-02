@@ -155,10 +155,10 @@ const buildPokemonAbilities = (queryParams, {ability}) => {
 // Remove duplicate rows for pokemon that have multiple types
 // per pokemon
 const parsePokemonResults = (result) => {
-  if (!result) {
-    return {pokemon: null};
-  }
   const pokemon = [];
+  if (!result) {
+    return {pokemon};
+  }
   result.forEach((row, index) => {
     // if pokemon already exists in return array, just append type
     if (index > 0 && result[index - 1].id === result[index].id) {
