@@ -34,8 +34,13 @@ router.get('/', (req, res) => {
         });
   }
 
+  const ids = [];
+  for (let i = startingId; i < startingId + range; i++) {
+    ids.push(i);
+  }
+  console.log(ids);
   // Within range, get data from DB and return parsed results
-  database.db.any(sql.pokemonAll.selectAllWithRange, {id: [1,2,3]})
+  database.db.any(sql.pokemonAll.selectAllWithRange, {ids})
       .then((result) => res.status(200).json(parsePokemonResults(result)))
       .catch((error) => {
         console.error(`Unable to process request with error: ${error}`);

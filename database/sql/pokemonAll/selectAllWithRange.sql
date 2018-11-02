@@ -5,5 +5,5 @@ SELECT pokemon.pokemon_id AS id,
   FROM pokemon
     INNER JOIN pokemon_types ON pokemon_types.pokemon_id = pokemon.pokemon_id 
     INNER JOIN types ON types.type_id = pokemon_types.type_id 
-      WHERE pokemon.pokemon_id IN (${id:csv})
+      WHERE pokemon.pokemon_id IN (${ids:csv})
         ORDER BY pokemon.pokemon_id
