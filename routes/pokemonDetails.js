@@ -575,6 +575,30 @@ const getWeaknesses = (types) => {
  * Creates an object that contains all unique ids for all facets of
  * the Pokemon including:
  * their main id, evolution ids, alternate form ids
+ * @example
+ * [
+ *  {
+ *    pokemon_id: 3,
+ *    name: 'Venusaur',
+ *    evolve_1: 1,
+ *    evolve_2: 2,
+ *    evolve_3: 3
+ *  },
+ *  {
+ *    pokemon_id: 10050,
+ *    name: 'Venusaur',
+ *    evolve_1: null,
+ *    evolve_2: null,
+ *    evolve_3: null
+ *  },
+ *  {
+ *    pokemon_id: 10051,
+ *    name: 'Mega Venusaur',
+ *    evolve_1: null,
+ *    evolve_2: null,
+ *    evolve_3: null
+ *  }
+ * ]
  *
  * @param {Object[]} resultSet All specie id matches
  *  includes alternate and evolutions
