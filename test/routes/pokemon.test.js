@@ -4,10 +4,13 @@ const app = require('../../app');
 const POKEMON = require('../../constants/pokemonConstants');
 
 const errorResult = {
-  'error': 'Invalid id or range',
-  'expected params': {
-    'id': `1-${POKEMON.NUMBER_OF_POKEMON}`,
-    'range': `(id + range - 1) < ${POKEMON.NUMBER_OF_POKEMON}`,
+  'error': 'Invalid search',
+  'valid search queries': {
+    'id': '1-807',
+    'range': '(id + range - 1) < 807',
+    'name': 'Not empty',
+    'types': '1-18, 1-18',
+    'ability': 'Not empty',
   },
 };
 
@@ -20,8 +23,8 @@ QUnit.test('Valid Single Pokemon Request, /pokemon?id=1&range=1', (assert) => {
         'id': 1,
         'name': 'Bulbasaur',
         'types': [
-          'grass',
           'poison',
+          'grass',
         ],
         'image_path': '/sprites/pokemon/large/1.png',
       },

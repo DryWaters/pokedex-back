@@ -14,13 +14,13 @@ QUnit.module('Pokemon Details Endpoint Testing');
 
 QUnit.test('Valid Pokemon Request (no forms), /pokemon/1', (assert) => {
   const expectedResult = {
-    "previous": {
-      "id": 807,
-      "name": "Zeraora"
+    'previous': {
+      'id': 807,
+      'name': 'Zeraora',
     },
-    "next": {
-      "id": 2,
-      "name": "Ivysaur"
+    'next': {
+      'id': 2,
+      'name': 'Ivysaur',
     },
     'id': 1,
     'name': 'Bulbasaur',
@@ -116,20 +116,20 @@ QUnit.test('Valid Pokemon Request (no forms), /pokemon/1', (assert) => {
 
   const assertAsync = assert.async();
   request(app)
-    .get('/pokemon/1')
-    .expect('Content-Type', /json/)
-    .expect('Content-Length', '1196')
-    .expect(200)
-    .then((response) => {
-      assertAsync();
-      assert.deepEqual(response.body, expectedResult,
-        'JSON does not equal, actual: ' + response.body +
+      .get('/pokemon/1')
+      .expect('Content-Type', /json/)
+      .expect('Content-Length', '1196')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body, expectedResult,
+            'JSON does not equal, actual: ' + response.body +
         ' expected: ' + expectedResult);
-    })
-    .catch((error) => {
-      assertAsync();
-      assert.ok(false, 'FAIL /pokemon/1, with error' + error);
-    });
+      })
+      .catch((error) => {
+        assertAsync();
+        assert.ok(false, 'FAIL /pokemon/1, with error' + error);
+      });
 });
 
 QUnit.test('Valid Pokemon detail with forms, /pokemon/3', (assert) => {
@@ -278,20 +278,20 @@ QUnit.test('Valid Pokemon detail with forms, /pokemon/3', (assert) => {
 
   const assertAsync = assert.async();
   request(app)
-    .get('/pokemon/3')
-    .expect('Content-Type', /json/)
-    .expect('Content-Length', '1705')
-    .expect(200)
-    .then((response) => {
-      assertAsync();
-      assert.deepEqual(response.body, expectedResult,
-        'JSON does not equal, actual: ' + response.body +
+      .get('/pokemon/3')
+      .expect('Content-Type', /json/)
+      .expect('Content-Length', '1705')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body, expectedResult,
+            'JSON does not equal, actual: ' + response.body +
         ' expected: ' + expectedResult);
-    })
-    .catch((error) => {
-      assertAsync();
-      assert.ok(false, 'FAIL /pokemon/3, with error' + error);
-    });
+      })
+      .catch((error) => {
+        assertAsync();
+        assert.ok(false, 'FAIL /pokemon/3, with error' + error);
+      });
 });
 
 QUnit.test('Valid Pokemon detail w/ evolutions, /pokemon/133', (assert) => {
@@ -436,135 +436,135 @@ QUnit.test('Valid Pokemon detail w/ evolutions, /pokemon/133', (assert) => {
 
   const assertAsync = assert.async();
   request(app)
-    .get('/pokemon/133')
-    .expect('Content-Type', /json/)
-    .expect('Content-Length', '1813')
-    .expect(200)
-    .then((response) => {
-      assertAsync();
-      assert.deepEqual(response.body, expectedResult,
-        'JSON does not equal, actual: ' + response.body +
+      .get('/pokemon/133')
+      .expect('Content-Type', /json/)
+      .expect('Content-Length', '1813')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body, expectedResult,
+            'JSON does not equal, actual: ' + response.body +
         ' expected: ' + expectedResult);
-    })
-    .catch((error) => {
-      assertAsync();
-      assert.ok(false, 'FAIL /pokemon/133, with error' + error);
-    });
+      })
+      .catch((error) => {
+        assertAsync();
+        assert.ok(false, 'FAIL /pokemon/133, with error' + error);
+      });
 });
 
 
 QUnit.test('Invalid ID Pokemon Request, /pokemon/-1', (assert) => {
   const assertAsync = assert.async();
   request(app)
-    .get('/pokemon/-1')
-    .expect('Content-Type', /json/)
-    .expect('Content-Length', JSON.stringify(errorResult)
-      .length.toString())
-    .expect(404)
-    .then((response) => {
-      assertAsync();
-      assert.deepEqual(response.body, errorResult,
-        'JSON does not equal, actual: ' + response.body +
+      .get('/pokemon/-1')
+      .expect('Content-Type', /json/)
+      .expect('Content-Length', JSON.stringify(errorResult)
+          .length.toString())
+      .expect(404)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body, errorResult,
+            'JSON does not equal, actual: ' + response.body +
         ' expected: ' + errorResult);
-    })
-    .catch((error) => {
-      assertAsync();
-      assert.ok(false, 'FAIL /pokemon/-1' + error);
-    });
+      })
+      .catch((error) => {
+        assertAsync();
+        assert.ok(false, 'FAIL /pokemon/-1' + error);
+      });
 });
 
 QUnit.test('Invalid empty ID Pokemon Request, /pokemon/808', (assert) => {
   const assertAsync = assert.async();
   request(app)
-    .get('/pokemon/' + POKEMON.NUMBER_OF_POKEMON + 1)
-    .expect('Content-Type', /json/)
-    .expect('Content-Length', JSON.stringify(errorResult)
-      .length.toString())
-    .expect(404)
-    .then((response) => {
-      assertAsync();
-      assert.deepEqual(response.body, errorResult,
-        'JSON does not equal, actual: ' + response.body +
+      .get('/pokemon/' + POKEMON.NUMBER_OF_POKEMON + 1)
+      .expect('Content-Type', /json/)
+      .expect('Content-Length', JSON.stringify(errorResult)
+          .length.toString())
+      .expect(404)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body, errorResult,
+            'JSON does not equal, actual: ' + response.body +
         ' expected: ' + errorResult);
-    })
-    .catch((error) => {
-      assertAsync();
-      assert.ok(false, 'FAIL /pokemon/808' + error);
-    });
+      })
+      .catch((error) => {
+        assertAsync();
+        assert.ok(false, 'FAIL /pokemon/808' + error);
+      });
 });
 
 QUnit.test('Invalid character for ID, /pokemon/!', (assert) => {
   const assertAsync = assert.async();
   request(app)
-    .get('/pokemon/!')
-    .expect('Content-Type', /json/)
-    .expect('Content-Length', JSON.stringify(errorResult)
-      .length.toString())
-    .expect(404)
-    .then((response) => {
-      assertAsync();
-      assert.deepEqual(response.body, errorResult,
-        'JSON does not equal, actual: ' + response.body +
+      .get('/pokemon/!')
+      .expect('Content-Type', /json/)
+      .expect('Content-Length', JSON.stringify(errorResult)
+          .length.toString())
+      .expect(404)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body, errorResult,
+            'JSON does not equal, actual: ' + response.body +
         ' expected: ' + errorResult);
-    })
-    .catch((error) => {
-      assertAsync();
-      assert.ok(false, 'FAIL /pokemon/!' + error);
-    });
+      })
+      .catch((error) => {
+        assertAsync();
+        assert.ok(false, 'FAIL /pokemon/!' + error);
+      });
 });
 
 QUnit.test('Should wrap to last pokemon, /pokemon/1', (assert) => {
   const assertAsync = assert.async();
   request(app)
-    .get('/pokemon/1')
-    .expect(200)
-    .then((response) => {
-      assertAsync();
-      assert.deepEqual(response.body.previous, {
-        id: 807,
-        name: 'Zeraora'
-      }, 'Should equal last pokemon');
-    });
+      .get('/pokemon/1')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body.previous, {
+          id: 807,
+          name: 'Zeraora',
+        }, 'Should equal last pokemon');
+      });
 });
 
 QUnit.test('Should wrap to first pokemon, /pokemon/807', (assert) => {
   const assertAsync = assert.async();
   request(app)
-    .get('/pokemon/807')
-    .expect(200)
-    .then((response) => {
-      assertAsync();
-      assert.deepEqual(response.body.next, {
-        id: 1,
-        name: 'Bulbasaur'
-      }, 'Should equal first pokemon');
-    });
+      .get('/pokemon/807')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body.next, {
+          id: 1,
+          name: 'Bulbasaur',
+        }, 'Should equal first pokemon');
+      });
 });
 
 QUnit.test('Should have previous, /pokemon/500', (assert) => {
   const assertAsync = assert.async();
   request(app)
-    .get('/pokemon/500')
-    .expect(200)
-    .then((response) => {
-      assertAsync();
-      assert.deepEqual(response.body.previous, {
-        id: 499,
-        name: 'Pignite'
-      } , 'Should equal Pignite');
-    });
+      .get('/pokemon/500')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body.previous, {
+          id: 499,
+          name: 'Pignite',
+        }, 'Should equal Pignite');
+      });
 });
 
 QUnit.test('Should have next, /pokemon/500', (assert) => {
   const assertAsync = assert.async();
   request(app)
-    .get('/pokemon/500')
-    .expect(200)
-    .then((response) => {
-      assertAsync();
-      assert.deepEqual(response.body.next, {
-        id: 501,
-        name: 'Oshawott'
-      } , 'Should equal Oshawott');
-    });
+      .get('/pokemon/500')
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body.next, {
+          id: 501,
+          name: 'Oshawott',
+        }, 'Should equal Oshawott');
+      });
 });

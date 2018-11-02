@@ -10,7 +10,7 @@ with endpoint of the base /pokemon
 Example of valid Search Params are:
 id=1&range=20
 name=bulb
-type=1,2
+types=1,2
 ability=over
 
 example to get one pokemon
@@ -25,17 +25,21 @@ and normal and fire type and has ability containing 'over'
 */
 
 router.get('/', (req, res) => {
-  // console.log(validSearch(req.query));
   if (!validSearch(req.query)) {
     return res.status(404)
         .json({
-          'error': 'Invalid id or range',
-          'expected params': {
+          'error': 'Invalid search',
+          'valid search queries': {
             'id': `1-${POKEMON.NUMBER_OF_POKEMON}`,
             'range': `(id + range - 1) < ${POKEMON.NUMBER_OF_POKEMON}`,
+            'name': 'Not empty',
+            'types': '1-18, 1-18',
+            'ability': 'Not empty',
           },
         });
   }
+
+  // Have a valid search, build query from search queries
 
   const startingId = Number.parseInt(req.query.id);
   const range = Number.parseInt(req.query.range);
@@ -75,7 +79,17 @@ const parsePokemonResults = (result) => {
   return {pokemon};
 };
 
+// Validates the search queries
 const validSearch = (queries) => {
+  let keys = Object.keys(queries);
+
+  // no search terms found...bad search
+  if (keys.length === 0) {
+    return false;
+  }
+
+  // Object containing all valid queries
+  // and function assigned to validate it
   const validQuery = {
     id: () => isValidIdAndRange(queries),
     range: () => isValidIdAndRange(queries),
@@ -84,7 +98,10 @@ const validSearch = (queries) => {
     name: () => checkName(queries.name),
   };
 
-  for (let query of Object.keys(queries)) {
+  // If key does not exist in valid query object
+  // or validation function returns false
+  // short circuit and return false
+  for (let query of keys) {
     if (!validQuery.hasOwnProperty(query) ||
       !validQuery[query]()) {
       return false;
@@ -94,19 +111,23 @@ const validSearch = (queries) => {
   return true;
 };
 
+// Verifies the id and range is a number and
+// between the valid number 1 - 807
 const isValidIdAndRange = ({id, range}) => {
   const pokemonId = Number.parseInt(id);
   const numberOfPokemon = Number.parseInt(range);
-  return (
-    numberOfPokemon >= 1 &&
-    pokemonId >= 1 &&
-    pokemonId <= POKEMON.NUMBER_OF_POKEMON &&
-    (pokemonId + numberOfPokemon - 1) <= POKEMON.NUMBER_OF_POKEMON &&
-    !isNaN(pokemonId) &&
-    !isNaN(numberOfPokemon)
+  return !(
+    numberOfPokemon < 1 ||
+    pokemonId < 1 ||
+    pokemonId > POKEMON.NUMBER_OF_POKEMON ||
+    (pokemonId + numberOfPokemon - 1) > POKEMON.NUMBER_OF_POKEMON ||
+    isNaN(pokemonId) ||
+    isNaN(numberOfPokemon)
   );
 };
 
+// Verifies the type is a number and
+// between 1 and 18
 const isValidTypes = (types) => {
   for (let type of types.split(',')) {
     if (isNaN(type) || type < 1 || type > POKEMON.NUMBER_OF_TYPES) {
@@ -117,10 +138,14 @@ const isValidTypes = (types) => {
   return true;
 };
 
+// Simple verification that the ability name is
+// not empty
 const checkAbility = (ability) => {
   return ability.length > 0;
 };
 
+// Simple verification that the pokemon name is
+// not empty
 const checkName = (name) => {
   return name.length > 0;
 };
