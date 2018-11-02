@@ -40,22 +40,115 @@ router.get('/', (req, res) => {
   }
 
   // Have a valid search, build query from search queries
+  const searchQuery = buildQuery(req.query);
 
-  const startingId = Number.parseInt(req.query.id);
-  const range = Number.parseInt(req.query.range);
-  const ids = [];
-  for (let i = startingId; i < startingId + range; i++) {
-    ids.push(i);
-  }
-
-
-  // Take given array of IDs and return the ids, names, and types
-  database.db.any(sql.pokemonAll.selectAllWithRange, {ids})
+  return database.db.any(searchQuery)
+      .then((result) => {
+        return parseIds(result);
+      })
+      .then((ids) => {
+        return database.db.any(sql.pokemonAll.selectAllWithRange, {ids});
+      })
       .then((result) => res.status(200).json(parsePokemonResults(result)))
       .catch((error) => {
-        console.error(`Unable to process request with error: ${error}`);
-      });
+        console.error(`'Error when searching for pokemon: ${error}`);
+        return res.status(404)
+            .json({
+              'error': 'Invalid search',
+              'valid search queries': {
+                'id': `1-${POKEMON.NUMBER_OF_POKEMON}`,
+                'range': `(id + range - 1) < ${POKEMON.NUMBER_OF_POKEMON}`,
+                'name': 'Not empty',
+                'types': '1-18, 1-18',
+                'ability': 'Not empty',
+              },
+            });
+      })
+  ;
 });
+
+const parseIds = (ids) => {
+  return ids.map((id) => {
+    return id.pokemon_id;
+  });
+};
+
+const buildQuery = (query) => {
+  const queryParams = {
+    select: ['SELECT p.pokemon_id'],
+    tables: ['pokemon p'],
+    joins: [],
+    where: [],
+    order: ['ORDER BY p.pokemon_id'],
+  };
+
+  const queryBuilder = {
+    id: () => buildIdAndRange(queryParams, query),
+    name: () => buildPokemonName(queryParams, query),
+    types: () => buildPokemonTypes(queryParams, query),
+    ability: () => buildPokemonAbilities(queryParams, query),
+  };
+
+  Object.keys(query).forEach((param) => {
+    if (param !== 'range') {
+      queryBuilder[param]();
+    }
+  });
+
+  return constructQuery(queryParams);
+};
+
+const constructQuery = (queryParams) => {
+  let query = queryParams.select + ' FROM ';
+  query += queryParams.tables.join(', ');
+
+  query += queryParams.joins.map((clause, index) => {
+    return ` JOIN ${clause}`;
+  }).join('');
+
+  query += queryParams.where.map((clause, index) => {
+    if (index === 0) {
+      return ` WHERE ${clause}`;
+    } else {
+      return ` AND ${clause}`;
+    }
+  }).join('');
+
+  query += ' ' + queryParams.order + ';';
+  return query;
+};
+
+const buildIdAndRange = (queryParams, {id, range}) => {
+  queryParams.where.push(`p.pokemon_id >= ${id}`);
+  queryParams.where.push('p.pokemon_id <= ' +
+    (Number.parseInt(id) + Number.parseInt(range)));
+};
+
+const buildPokemonName = (queryParams, {name}) => {
+  queryParams.where.push(
+      `LOWER(p.name) LIKE '%${name.toLowerCase()}%'`);
+};
+
+const buildPokemonTypes = (queryParams, {types}) => {
+  let typeWhere = '';
+  types.split(',').forEach((type, index) => {
+    if (index !== 0) {
+      typeWhere += ' AND ';
+    }
+
+    queryParams.joins.push(
+        `pokemon_types pt${index} ON p.pokemon_id = pt${index}.pokemon_id`);
+
+    typeWhere += `pt${index}.type_id = ${type}`;
+  });
+  queryParams.where.push(`(${typeWhere})`);
+};
+
+const buildPokemonAbilities = (queryParams, {ability}) => {
+  queryParams.where.push(`LOWER(a.name) LIKE '%${ability.toLowerCase()}%'`);
+  queryParams.joins.push(`pokemon_abils pa ON p.pokemon_id = pa.pokemon_id`);
+  queryParams.joins.push(`abilities a ON pa.ability_id = a.abil_id`);
+};
 
 // Remove duplicate rows for pokemon that have multiple types
 // per pokemon
