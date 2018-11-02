@@ -35,8 +35,7 @@ router.get('/', (req, res) => {
   }
 
   // Within range, get data from DB and return parsed results
-  database.db.any(sql.pokemonAll.selectAllWithRange,
-      [startingId, startingId + range - 1])
+  database.db.any(sql.pokemonAll.selectAllWithRange, {id: [1,2,3]})
       .then((result) => res.status(200).json(parsePokemonResults(result)))
       .catch((error) => {
         console.error(`Unable to process request with error: ${error}`);

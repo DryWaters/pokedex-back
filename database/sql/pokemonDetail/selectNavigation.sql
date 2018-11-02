@@ -1,3 +1,3 @@
-select p.pokemon_id, p.name as pokemon_name
-from pokemon p
-where p.pokemon_id = $1
+SELECT p.pokemon_id, p.name AS pokemon_name
+    FROM pokemon p
+        WHERE p.pokemon_id = ${pokemonId}

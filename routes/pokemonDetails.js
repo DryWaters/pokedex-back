@@ -27,7 +27,7 @@ router.get('/:id', (req, res, next) => {
   }
 
   // valid pokemon ID, get detailed data
-  database.db.any(sql.pokemonDetail.selectAllFormsAndEvolutions, pokemonId)
+  database.db.any(sql.pokemonDetail.selectAllFormsAndEvolutions, { pokemonId })
     .then((result) => {
       // Get all unique forms and evolutions for the particular pokemon
       const parsedIds = parseAllFormsAndEvolutions(result);
@@ -292,7 +292,7 @@ const getFormDetails = (pokemonId) => {
 };
 
 const getFormData = (pokemonId) => {
-  return database.db.any(sql.pokemonDetail.selectForms, pokemonId);
+  return database.db.any(sql.pokemonDetail.selectForms, { pokemonId });
 };
 
 /* Fetch evolution details needed from database.
@@ -305,7 +305,7 @@ const getEvolutionDetails = (pokemonId) => {
 };
 
 const getEvolutionData = (pokemonId) => {
-  return database.db.any(sql.pokemonDetail.selectEvolutions, pokemonId);
+  return database.db.any(sql.pokemonDetail.selectEvolutions, { pokemonId });
 };
 
 /* Fetch main pokemon details needed from database.
@@ -332,23 +332,23 @@ const getMainPokemonDetails = (pokemonId) => {
 };
 
 const getMainData = (pokemonId) => {
-  return database.db.any(sql.pokemonDetail.selectMainPokemon, pokemonId);
+  return database.db.any(sql.pokemonDetail.selectMainPokemon, { pokemonId });
 };
 
 const getTypes = (pokemonId) => {
-  return database.db.any(sql.pokemonDetail.selectTypeNames, pokemonId);
+  return database.db.any(sql.pokemonDetail.selectTypeNames, { pokemonId });
 };
 
 const getAbilities = (pokemonId) => {
-  return database.db.any(sql.pokemonDetail.selectAbilities, pokemonId);
+  return database.db.any(sql.pokemonDetail.selectAbilities, { pokemonId });
 };
 
 const getTypeIds = (pokemonId) => {
-  return database.db.any(sql.pokemonDetail.selectTypeIds, pokemonId);
+  return database.db.any(sql.pokemonDetail.selectTypeIds, { pokemonId });
 };
 
 const getNavigation = (pokemonId) => {
-  return database.db.any(sql.pokemonDetail.selectNavigation, pokemonId);
+  return database.db.any(sql.pokemonDetail.selectNavigation, { pokemonId });
 };
 
 const getWeaknesses = (types) => {
@@ -370,7 +370,7 @@ const getWeaknesses = (types) => {
     type1 = types[0].type_id;
     type2 = types[1].type_id;
   }
-  return database.db.any(sql.pokemonDetail.selectWeaknesses, [type1, type2])
+  return database.db.any(sql.pokemonDetail.selectWeaknesses, { type1, type2 })
     .then((weaknesses) => {
       Object.keys(weaknesses[0]).forEach((col) => {
         if (weaknesses[0][col] > 1) {

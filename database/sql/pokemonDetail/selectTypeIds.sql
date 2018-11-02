@@ -1,3 +1,3 @@
-select type_id, slot
-from pokemon_types pt
-where pt.pokemon_id = $1
+SELECT type_id, slot
+    FROM pokemon_types pt
+        WHERE pt.pokemon_id = ${pokemonId}
