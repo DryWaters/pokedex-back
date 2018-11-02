@@ -183,22 +183,13 @@ const loadPokemonTypeData = () => {
  * It is wrapped in a Promise to allow chaining of the next
  * task after all data is inserted.
  *
- * CSV has a weird bug that appends whitespace to the first
- * column header when using a special seperator.  Opened issue
- * on GitHub
- * @see https://github.com/mafintosh/csv-parser/issues/105
- *
  * @return {Promise} Promise to know when all data is inserted
  */
 const loadPokemonDescData = () => {
   return new Promise((resolve, reject) => {
     let pokemonDescData = [];
     fs.createReadStream('./data/csv/pokemon_desc.csv')
-        .pipe(csv(
-            {
-              separator: '`',
-              mapHeaders: ({header}) => header.trim(),
-            }))
+        .pipe(csv({separator: '`'}))
         .on('data', (data) => pokemonDescData.push(
             {
               pokemon_id: data.pokemon_id,
@@ -259,22 +250,13 @@ const loadEvolutionData = () => {
  * It is wrapped in a Promise to allow chaining of the next
  * task after all data is inserted.
  *
- * CSV has a weird bug that appends whitespace to the first
- * column header when using a special seperator.  Opened issue
- * on GitHub
- * @see https://github.com/mafintosh/csv-parser/issues/105
- *
  * @return {Promise} Promise to know when all data is inserted
  */
 const loadAbilitiesData = () => {
   return new Promise((resolve, reject) => {
     let abilitiesData = [];
     fs.createReadStream('./data/csv/abilities.csv')
-        .pipe(csv(
-            {
-              separator: '`',
-              mapHeaders: ({header}) => header.trim(),
-            }))
+        .pipe(csv({separator: '`'}))
         .on('data', (data) => abilitiesData.push(
             {
               abil_id: data.abil_id,
@@ -368,21 +350,13 @@ const loadPokemonAbilitiesData = () => {
  * It is wrapped in a Promise to allow chaining of the next
  * task after all data is inserted.
  *
- * CSV has a weird bug that appends whitespace to the first
- * column header when using a special seperator.  Opened issue
- * on GitHub
- * @see https://github.com/mafintosh/csv-parser/issues/105
- *
  * @return {Promise} Promise to know when all data is inserted
  */
 const loadDamageData = () => {
   return new Promise((resolve, reject) => {
     let damageData = [];
     fs.createReadStream('./data/csv/damage_stats.csv')
-        .pipe(csv(
-            {
-              mapHeaders: ({header}) => header.trim(),
-            }))
+        .pipe(csv())
         .on('data', (data) => damageData.push(
             {
               type_1: data.type_1,
