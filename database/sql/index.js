@@ -1,11 +1,21 @@
-// File sql.js
+/**
+ * @fileoverview SQL QueryFile helper that loads all
+ * external SQL files and exports them as objects
+ */
 
 const QueryFile = require('pg-promise').QueryFile;
 const path = require('path');
 
-// Helper for linking to external query files:
+/**
+ * Helper function to create a QueryFile object from a given
+ * path and SQL file location.
+ * More examples of QueryFiles are at:
+ * https://github.com/vitaly-t/pg-promise-demo/blob/master/JavaScript/db/sql/index.js
+ * @param {String} file The filename that contains the sql
+ * @return {Object} QueryFile that PGPromise uses to run queries
+ */
 const sql = (file) => {
-  const fullPath = path.join(__dirname, file); // generating full path;
+  const fullPath = path.join(__dirname, file);
   return new QueryFile(fullPath, {minify: true});
 };
 

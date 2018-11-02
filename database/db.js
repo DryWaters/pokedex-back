@@ -1,10 +1,18 @@
+/**
+ * @fileoverview Contains all database logic including the
+ * parameters to connect to either local or external database
+ * and column definitions for the Pokemon tables.
+ */
+
 const pgp = require('pg-promise')();
 let db;
 
-/* Change database connection based on either using local
- environment or using Heroku PostGres DB
- Heroku autocreates the DATABASE_URL environment
- variable when it runs */
+/**
+ * Changes database connection based on either using local
+ * environment or using Heroku External PostGres DB
+ * Heroku CLI autocreates the DATABASE_URL environment
+ * variable when it runs.
+ */
 if (process.env.LOCAL && process.env.LOCAL === 'TRUE') {
   connectionDetails = {
     host: process.env.DB_HOST,
@@ -18,6 +26,11 @@ if (process.env.LOCAL && process.env.LOCAL === 'TRUE') {
   db = pgp(process.env.DATABASE_URL + '?ssl=true');
 }
 
+/**
+ * ColumnSet definitions for all Pokemon data tables.
+ * Used when inserting the Pokemon data.
+ * @see utils.js
+ */
 const pokemonColumns = new pgp.helpers.ColumnSet([
   'pokemon_id',
   'name',
@@ -101,11 +114,11 @@ module.exports = {
   pgp,
   pokemonColumns,
   typeColumns,
+  evolutionColumns,
   pokemonTypeColumns,
   pokemonDescColumns,
-  evolutionColumns,
   abilitiesColumns,
   speciesColumns,
-  damageColumns,
   pokemonAbilsColumns,
+  damageColumns,
 };

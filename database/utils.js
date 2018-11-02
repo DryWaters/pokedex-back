@@ -72,7 +72,7 @@ const createTables = () => {
 };
 
 /**
- * Loads the data for the Pokemon table.
+ * Loads the data for the pokemon table.
  * It is wrapped in a Promise to allow chaining of the next
  * task after all data is inserted.
  *
@@ -113,7 +113,7 @@ const loadPokemonData = () => {
 };
 
 /**
- * Loads the data for the Type table.
+ * Loads the data for the types table.
  * It is wrapped in a Promise to allow chaining of the next
  * task after all data is inserted.
  *
@@ -145,7 +145,7 @@ const loadTypeData = () => {
 };
 
 /**
- * Loads the data for the PokemonType table.
+ * Loads the data for the pokemon_types table.
  * It is wrapped in a Promise to allow chaining of the next
  * task after all data is inserted.
  *
@@ -178,12 +178,15 @@ const loadPokemonTypeData = () => {
   });
 };
 
-
 /**
- * Loads the data for the PokemonDesc table.
- * When using CSV-Parser it has a weird bug
+ * Loads the data for the pokemon_desc table.
  * It is wrapped in a Promise to allow chaining of the next
  * task after all data is inserted.
+ *
+ * CSV has a weird bug that appends whitespace to the first
+ * column header when using a special seperator.  Opened issue
+ * on GitHub
+ * @see https://github.com/mafintosh/csv-parser/issues/105
  *
  * @return {Promise} Promise to know when all data is inserted
  */
@@ -217,10 +220,13 @@ const loadPokemonDescData = () => {
   });
 };
 
-/* Loads all evolution definition data from CSV file expected to
- be in location is ./data/csv/evolutions.csv.  It uses NPM package
- csv-parser. Data is inserted into one large batch after all
- data has been added to an array. */
+/**
+ * Loads the data for the evolutions table.
+ * It is wrapped in a Promise to allow chaining of the next
+ * task after all data is inserted.
+ *
+ * @return {Promise} Promise to know when all data is inserted
+ */
 const loadEvolutionData = () => {
   return new Promise((resolve, reject) => {
     let evolutionData = [];
@@ -248,10 +254,18 @@ const loadEvolutionData = () => {
   });
 };
 
-/* Loads all abilities definition data from CSV file expected
-to be in location is ./data/csv/abilities.csv.  It uses NPM
-package csv-parser. Data is inserted into one large batch after
-all data has been added to an array. */
+/**
+ * Loads the data for the abilities table.
+ * It is wrapped in a Promise to allow chaining of the next
+ * task after all data is inserted.
+ *
+ * CSV has a weird bug that appends whitespace to the first
+ * column header when using a special seperator.  Opened issue
+ * on GitHub
+ * @see https://github.com/mafintosh/csv-parser/issues/105
+ *
+ * @return {Promise} Promise to know when all data is inserted
+ */
 const loadAbilitiesData = () => {
   return new Promise((resolve, reject) => {
     let abilitiesData = [];
@@ -282,10 +296,13 @@ const loadAbilitiesData = () => {
   });
 };
 
-/* Loads all species  data from CSV file expected
-to be in location is ./data/csv/species.csv.  It uses NPM
-package csv-parser. Data is inserted into one large batch after
-all data has been added to an array. */
+/**
+ * Loads the data for the species table.
+ * It is wrapped in a Promise to allow chaining of the next
+ * task after all data is inserted.
+ *
+ * @return {Promise} Promise to know when all data is inserted
+ */
 const loadSpeciesData = () => {
   return new Promise((resolve, reject) => {
     let speciesData = [];
@@ -311,10 +328,13 @@ const loadSpeciesData = () => {
   });
 };
 
-/* Loads all pokemon abils data from CSV file expected
-to be in location is ./data/csv/pokemon_abilities.csv.  It uses NPM
-package csv-parser. Data is inserted into one large batch after
-all data has been added to an array. */
+/**
+ * Loads the data for the pokemon_abils table.
+ * It is wrapped in a Promise to allow chaining of the next
+ * task after all data is inserted.
+ *
+ * @return {Promise} Promise to know when all data is inserted
+ */
 const loadPokemonAbilitiesData = () => {
   return new Promise((resolve, reject) => {
     let pokemonAbilsData = [];
@@ -343,10 +363,18 @@ const loadPokemonAbilitiesData = () => {
   });
 };
 
-/* Loads all damage data from CSV file expected
-to be in location is ./data/csv/damage_stats.csv.  It uses NPM
-package csv-parser. Data is inserted into one large batch after
-all data has been added to an array. */
+/**
+ * Loads the data for the damage_stats table.
+ * It is wrapped in a Promise to allow chaining of the next
+ * task after all data is inserted.
+ *
+ * CSV has a weird bug that appends whitespace to the first
+ * column header when using a special seperator.  Opened issue
+ * on GitHub
+ * @see https://github.com/mafintosh/csv-parser/issues/105
+ *
+ * @return {Promise} Promise to know when all data is inserted
+ */
 const loadDamageData = () => {
   return new Promise((resolve, reject) => {
     let damageData = [];
@@ -412,4 +440,3 @@ module.exports = {
   loadDamageData,
   loadPokemonAbilitiesData,
 };
-
