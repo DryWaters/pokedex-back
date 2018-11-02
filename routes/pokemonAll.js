@@ -47,7 +47,9 @@ router.get('/', (req, res) => {
         return parseIds(result);
       })
       .then((ids) => {
-        return database.db.any(sql.pokemonAll.selectAllWithRange, {ids});
+        if (ids.length !== 0) {
+          return database.db.any(sql.pokemonAll.selectAllWithRange, {ids});
+        }
       })
       .then((result) => res.status(200).json(parsePokemonResults(result)))
       .catch((error) => {
@@ -153,6 +155,9 @@ const buildPokemonAbilities = (queryParams, {ability}) => {
 // Remove duplicate rows for pokemon that have multiple types
 // per pokemon
 const parsePokemonResults = (result) => {
+  if (!result) {
+    return {pokemon: null};
+  }
   const pokemon = [];
   result.forEach((row, index) => {
     // if pokemon already exists in return array, just append type
