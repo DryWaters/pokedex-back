@@ -1,6 +1,6 @@
 /**
  * @fileoverview Router endpoint that searchs all Pokemon based
- * on the search criteria based in.
+ * on the search criteria.
  */
 
 const express = require('express');
@@ -18,8 +18,6 @@ const sql = require('../database/sql');
  * name=(Not empty)
  * types=(1-18),[1-18] (2nd type is optional)
  * ability=(Not empty)
- *
- * @
  *
  * @example
  * Get one pokemon
@@ -212,7 +210,6 @@ const buildPokemonName = (queryParams, {name}) => {
  * @param {String} types deconstructs types.  Ex. { types: '1,2' }
  */
 const buildPokemonTypes = (queryParams, {types}) => {
-  console.log(typeof types);
   let typeWhere = '';
   types.split(',').forEach((type, index) => {
     if (index !== 0) {
