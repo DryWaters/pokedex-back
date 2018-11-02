@@ -9,6 +9,7 @@ const TOTAL_POKEMON_WITH_TYPES = 1575;
 const TOTAL_POKEMON_WITH_ABILS = 2329;
 const SPRITE_PATH = '/sprites/pokemon/';
 
+
 module.exports = {
   NUMBER_OF_POKEMON,
   NUM_POKEMON_WITH_ALT_FORMS,
