@@ -97,6 +97,9 @@ const parseIds = (ids) => {
  * Takes all query params, and builds a SQL query that will pull the
  * requested data the user is looking for.
  *
+ * hasRangeSearch attribute is to know if should append default range
+ * search of 1 - 807 (as to not search alternate forms)
+ *
  * *NOTE*
  * query params have already been validated.
  *
@@ -115,6 +118,7 @@ const buildQuery = (query) => {
     joins: [],
     where: [],
     order: ['ORDER BY p.pokemon_id'],
+    hasRangeSearch: false,
   };
 
   // Call builder function for each search param
@@ -165,13 +169,24 @@ const constructQuery = (queryParams) => {
     }
   }).join('');
 
+  // if user has not supplied a range, then attach
+  // default range of 1-807
+  if (!queryParams.hasRangeSearch) {
+    query += ' AND p.pokemon_id >= 1 AND p.pokemon_id <= ' +
+      POKEMON.NUMBER_OF_POKEMON;
+  }
+
   // Append the ORDER BY
   query += ' ' + queryParams.order + ';';
+
   return query;
 };
 
 /**
- * Attaches the needed range for the search by range
+ * 1. Attaches the needed range for the search by range
+ * 2. Sets the flag that there is a user initiated range search
+ * to not attach the default range of 1-807
+ *
  * @param {Object} queryParams Contains all needed tabls, where, joins
  * @param {String} id deconstructes id { id: '1', range: '20'}
  * @param {String} range deconstructs range { id: '1', range: '20'}
@@ -180,6 +195,7 @@ const buildIdAndRange = (queryParams, {id, range}) => {
   queryParams.where.push(`p.pokemon_id >= ${id}`);
   queryParams.where.push('p.pokemon_id <= ' +
     (Number.parseInt(id) + Number.parseInt(range) - 1));
+  queryParams.hasRangeSearch = true;
 };
 
 /**
