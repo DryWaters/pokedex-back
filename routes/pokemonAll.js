@@ -121,7 +121,7 @@ const constructQuery = (queryParams) => {
 const buildIdAndRange = (queryParams, {id, range}) => {
   queryParams.where.push(`p.pokemon_id >= ${id}`);
   queryParams.where.push('p.pokemon_id <= ' +
-    (Number.parseInt(id) + Number.parseInt(range)));
+    (Number.parseInt(id) + Number.parseInt(range) - 1));
 };
 
 const buildPokemonName = (queryParams, {name}) => {
