@@ -56,10 +56,9 @@ router.get('/', (req, res) => {
   // Get a list of Pokemon IDs that match search query
   return database.db.any(searchQuery)
       .then((result) => {
-        return parseIds(result);
-      })
-      // If have some valid IDs => get their ID, name, and types
-      .then((ids) => {
+        const ids = parseIds(result);
+
+        // if have valid IDs, then grab all ids, names, and types for the list
         if (ids.length !== 0) {
           return database.db.any(sql.pokemonAll.selectAllWithRange, {ids});
         }
