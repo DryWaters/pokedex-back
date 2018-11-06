@@ -41,12 +41,13 @@ router.get('/:id', (req, res) => {
 
   // Have a valid pokemon ID, get detailed data
   database.db.any(sql.pokemonDetail.selectAllFormsAndEvolutions, {pokemonId})
+
+      // Then get all unique forms and evolutions for the particular pokemon
       .then((result) => {
-      // Get all unique forms and evolutions for the particular pokemon
         const parsedIds = parseAllFormsAndEvolutions(result);
 
         // Create promises for all keys (mainId, forms, evolutions x3);
-        Promise.all(Object.keys(parsedIds).map((key) => {
+        return Promise.all(Object.keys(parsedIds).map((key) => {
           switch (key) {
             case 'mainId': {
               return getMainPokemonDetails(parsedIds[key][0]);
@@ -72,31 +73,19 @@ router.get('/:id', (req, res) => {
               })));
             }
           }
-        }))
-            // Done getting data, now parse the data to expected return
-            .then((allData) => {
-              return parseData(allData);
-            })
-            // All good!  Return results!
-            .then((finalResult) => {
-              return res.status(200).json(finalResult);
-            })
-            // failed when trying to get individual
-            // details either main id, forms, or evolutions
-            .catch((err) => {
-              console.error('Unable to get pokemon data, oops with error: '
-            + err);
-              return res.status(404).json({
-                'errorCode': 404,
-                'error': 'Unable to get pokemon details data!',
-                'errorMessage': err,
-              });
-            });
+        }));
       })
-      // failed when trying to get main id, forms, and evolutions ids.
+
+      // Done getting data, now parse the data to expected return format
+      .then((allData) => {
+        return res.status(200).json(parseData(allData));
+      })
+
+      // failed when trying to get individual
+      // details either main id, forms, or evolutions
       .catch((err) => {
         console.error('Unable to get pokemon data, oops with error: '
-        + err);
+      + err);
         return res.status(404).json({
           'errorCode': 404,
           'error': 'Unable to get pokemon details data!',
