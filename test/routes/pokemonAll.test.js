@@ -268,6 +268,28 @@ QUnit.test('Should return error:  Exceeds ID Pokemon Request, ' +
       });
 });
 
+QUnit.test('Should return error: Has space in request, ' +
+    '/pokemon?id=800ID&range= 1', (assert) => {
+  const assertAsync = assert.async();
+  request(app)
+      .get('/pokemon?id=800&range= 1')
+      .expect('Content-Type', /json/)
+      .expect('Content-Length', JSON.stringify(errorResult)
+          .length.toString())
+      .expect(404)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body, errorResult,
+            'JSON does not equal, actual: ' + response.body +
+            ' expected: ' + errorResult);
+      })
+      .catch((error) => {
+        assertAsync();
+        assert.ok(false, 'FAIL /pokemon?id=800&range= 1 ' +
+          'with error' + error);
+      });
+});
+
 QUnit.test('Should return error: Exceeds Range Pokemon Request, ' +
     '/pokemon?id=800ID&range=10', (assert) => {
   const assertAsync = assert.async();

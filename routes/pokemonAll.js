@@ -35,8 +35,6 @@ const sql = require('../database/sql');
  * /pokemon?id=10&range=20&name=bulb&types=1,10&ability=over
  * */
 router.get('/', (req, res) => {
-  // Checks if valid search query
-  // returns 404 if any fail
   if (!validSearch(req.query)) {
     return res.status(404)
         .json({
@@ -147,7 +145,7 @@ const parseIds = (ids) => {
  * 'SELECT p.pokemon_id FROM pokemon p ORDER BY p.pokemon_id'
  *
  * @param {Object} query Query params from search ex. { name: 'bulb', types=1 }
- * @return {String} constructoQuery() Final constructed query
+ * @return {String} constructQuery() Final constructed query
  */
 const buildQuery = (query) => {
   // Object that contains Strings that represent
@@ -447,7 +445,9 @@ const isValidIdAndRange = ({id, range}) => {
     pokemonId > POKEMON.NUMBER_OF_POKEMON ||
     (pokemonId + numberOfPokemon - 1) > POKEMON.NUMBER_OF_POKEMON ||
     isNaN(pokemonId) ||
-    isNaN(numberOfPokemon)
+    isNaN(numberOfPokemon) ||
+    !/^\d+/.test(id) ||
+    !/^\d+/.test(range)
   );
 };
 
