@@ -18,6 +18,7 @@ const sql = require('../database/sql');
  * name=(Not empty)
  * types=(1-18),[1-18] (2nd type is optional)
  * ability=(Not empty)
+ * weaknesses=(1-18),[1-18]* (2+ types are optional)
  *
  * @example
  * Get one pokemon
@@ -50,12 +51,32 @@ router.get('/', (req, res) => {
         });
   }
 
-  // Have a valid search, build query from search queries
-  const searchQuery = buildQuery(req.query);
+  new Promise((resolve) => resolve())
+      .then(() => {
+        // If user wants to search by weakness, then get all types that
+        // are weak to that searched weakness(es)
+        if (req.query.weaknesses) {
+          return database.db.any(weaknessQuery(req.query.weaknesses));
+        }
+      })
+      .then((weaknessTypes) => {
+        // return empty array if there are no types weak to weaknesses searched
+        if (req.query.weaknesses && weaknessTypes.length === 0) {
+          return [];
+        }
 
-  // Get a list of Pokemon IDs that match search query
-  return database.db.any(searchQuery)
+        // If user did search for a weakness, replace weakness search query with
+        // types that are weak to the searched weaknesses
+        if (weaknessTypes) {
+          req.query.weaknesses = weaknessTypes;
+        }
+
+        // search for all pokemon IDs that match the user's requested search
+        // parameters
+        return database.db.any(buildQuery(req.query));
+      })
       .then((result) => {
+        // Peel off just IDs from row
         const ids = parseIds(result);
 
         // if have valid IDs, then grab all ids, names, and types for the list
@@ -63,8 +84,10 @@ router.get('/', (req, res) => {
           return database.db.any(sql.pokemonAll.selectAllWithRange, {ids});
         }
       })
-      // return parsed results
+      // return parsed results to front end
       .then((result) => res.status(200).json(parsePokemonResults(result)))
+
+      // Error in one of the database queries.
       .catch((error) => {
         console.error(`'Error when searching for pokemon: ${error}`);
         return res.status(404)
@@ -80,6 +103,24 @@ router.get('/', (req, res) => {
             });
       });
 });
+
+/**
+ * Creates a SQL query to search for the weaknesses the user is looking for
+ * @param {String} weaknesses Comma seperated list of weaknesses to search for
+ * @return {String} SQL query
+ */
+const weaknessQuery = (weaknesses) => {
+  let query = 'SELECT type_1, type_2 FROM damage_stats ';
+  weaknesses.split(',').map((weakness, index) => {
+    if (index === 0) {
+      query += `WHERE ${POKEMON.TYPE_LOOKUP[Number.parseInt(weakness)]} > 1 `;
+    } else {
+      query += `AND ${POKEMON.TYPE_LOOKUP[Number.parseInt(weakness)]} > 1 `;
+    }
+  }).join('');
+
+  return query;
+};
 
 /**
  * Strips off the Pokemon IDs from the query
@@ -116,6 +157,7 @@ const buildQuery = (query) => {
     tables: ['pokemon p'],
     joins: [],
     where: [],
+    weaknessesWhere: [],
     order: ['ORDER BY p.pokemon_id'],
     hasRangeSearch: false,
   };
@@ -123,9 +165,10 @@ const buildQuery = (query) => {
   // Call builder function for each search param
   const queryBuilder = {
     id: () => buildIdAndRange(queryParams, query),
-    name: () => buildPokemonName(queryParams, query),
-    types: () => buildPokemonTypes(queryParams, query),
-    ability: () => buildPokemonAbilities(queryParams, query),
+    name: () => buildQueryName(queryParams, query),
+    types: () => buildQueryTypes(queryParams, query),
+    ability: () => buildQueryAbilities(queryParams, query),
+    weaknesses: () => buildQueryWeaknesses(queryParams, query),
   };
 
   // skips over 'range' because already built with
@@ -139,6 +182,36 @@ const buildQuery = (query) => {
   // Return the final constructed String that contains the build
   // SQL Select query
   return constructQuery(queryParams);
+};
+
+/**
+ * 1. Checks if needs to add joins to pokemon_types (to not
+ * duplicate joins from Type searches)
+ * 2. Pushes on the queries for type searches
+ *
+ * @param {Object} queryParams Contains all needed tables, where, joins
+ * @param {Object} query All query params (need to check if type search)
+ */
+const buildQueryWeaknesses = (queryParams, query) => {
+  // Check if already searching for types
+  if (query.types) {
+    // if only searching by one type (from types search),
+    // then add a second join to check second type
+    if (query.types.length === 1) {
+      queryParams.joins.push('pokemon_types pt1 ON p.pokemon_id' +
+        ' = pt1.pokemon_id');
+    }
+  } else {
+    queryParams.joins.push('pokemon_types pt0 ON p.pokemon_id = ' +
+      'pt0.pokemon_id');
+    queryParams.joins.push('pokemon_types pt1 ON p.pokemon_id = ' +
+      'pt1.pokemon_id');
+  }
+
+  query.weaknesses.forEach((weakness) => {
+    queryParams.weaknessesWhere.push('pt0.type_id = ' +
+      weakness.type_1 + ' AND pt1.type_id = ' + weakness.type_2);
+  });
 };
 
 /**
@@ -168,6 +241,29 @@ const constructQuery = (queryParams) => {
     }
   }).join('');
 
+  // Attach AND ( or WHERE ( if searching by weaknesses
+  // Depending on if there are previous WHERE clauses
+  if (queryParams.where.length !== 0 &&
+      queryParams.weaknessesWhere.length !== 0) {
+    query += ' AND (';
+  } else if (queryParams.weaknessesWhere.length !== 0) {
+    query += ' WHERE (';
+  }
+
+  // Attach weakness clauses based on if it
+  // is the first, last, or middle weakness search clause
+  // Weakness search should look like
+  // AND/WHERE ((pt0.type_id = 12 AND pt1.type_id = 2) OR (pt0...))
+  query += queryParams.weaknessesWhere.map((clause, index) => {
+    if (index === 0) {
+      return `(${clause})`;
+    } else if (index === queryParams.weaknessesWhere.length - 1) {
+      return ` OR (${clause}))`;
+    } else {
+      return ` OR (${clause})`;
+    }
+  }).join('');
+
   // if user has not supplied a range, then attach
   // default range of 1-807
   if (!queryParams.hasRangeSearch) {
@@ -186,7 +282,7 @@ const constructQuery = (queryParams) => {
  * 2. Sets the flag that there is a user initiated range search
  * to not attach the default range of 1-807
  *
- * @param {Object} queryParams Contains all needed tabls, where, joins
+ * @param {Object} queryParams Contains all needed tables, where, joins
  * @param {String} id deconstructes id { id: '1', range: '20'}
  * @param {String} range deconstructs range { id: '1', range: '20'}
  */
@@ -202,10 +298,10 @@ const buildIdAndRange = (queryParams, {id, range}) => {
  * Converts both the table data and searched term to lowercase to avoid
  * case sensitivity.
  *
- * @param {Object} queryParams Contains all needed tabls, where, joins
+ * @param {Object} queryParams Contains all needed tables, where, joins
  * @param {String} name deconstructs name { name: 'bulb' }
  */
-const buildPokemonName = (queryParams, {name}) => {
+const buildQueryName = (queryParams, {name}) => {
   queryParams.where.push(
       `LOWER(p.name) LIKE '%${name.toLowerCase()}%'`);
 };
@@ -221,10 +317,10 @@ const buildPokemonName = (queryParams, {name}) => {
  * For multiple type searches
  * (pt.type_id = 1 AND pt.type_id = 2)
  *
- * @param {Object} queryParams Contains all needed tabls, where, joins
+ * @param {Object} queryParams Contains all needed tables, where, joins
  * @param {String} types deconstructs types.  Ex. { types: '1,2' }
  */
-const buildPokemonTypes = (queryParams, {types}) => {
+const buildQueryTypes = (queryParams, {types}) => {
   let typeWhere = '';
   types.split(',').forEach((type, index) => {
     if (index !== 0) {
@@ -244,10 +340,10 @@ const buildPokemonTypes = (queryParams, {types}) => {
  * Converts both the table data and searched term to lowercase to avoid
  * case sensitivity.
  *
- * @param {Object} queryParams Contains all needed tabls, where, joins
+ * @param {Object} queryParams Contains all needed tables, where, joins
  * @param {String} ability deconstructs ability { ability: 'over' }
  */
-const buildPokemonAbilities = (queryParams, {ability}) => {
+const buildQueryAbilities = (queryParams, {ability}) => {
   queryParams.where.push(`LOWER(a.name) LIKE '%${ability.toLowerCase()}%'`);
   queryParams.joins.push(`pokemon_abils pa ON p.pokemon_id = pa.pokemon_id`);
   queryParams.joins.push(`abilities a ON pa.ability_id = a.abil_id`);
@@ -320,6 +416,7 @@ const validSearch = (queries) => {
     types: () => isValidTypes(queries.types),
     ability: () => checkAbility(queries.ability),
     name: () => checkName(queries.name),
+    weaknesses: () => isValidTypes(queries.weaknesses),
   };
 
   // If key does not exist in valid query object
