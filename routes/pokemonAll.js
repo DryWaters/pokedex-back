@@ -141,12 +141,12 @@ const parseIds = (ids) => {
  * search of 1 - 807 (as to not search alternate forms)
  *
  * *NOTE*
- * query params have already been validated.
+ * query params have already been validated at this point
  *
  * Common query parts are
  * 'SELECT p.pokemon_id FROM pokemon p ORDER BY p.pokemon_id'
  *
- * @param {Object} query Query params from search ex. { name: 'bulb', type=1,2 }
+ * @param {Object} query Query params from search ex. { name: 'bulb', types=1 }
  * @return {String} constructoQuery() Final constructed query
  */
 const buildQuery = (query) => {
@@ -349,7 +349,6 @@ const buildQueryAbilities = (queryParams, {ability}) => {
   queryParams.joins.push(`abilities a ON pa.ability_id = a.abil_id`);
 };
 
-
 /**
  * Removes duplicate rows for Pokemon that have multiple types
  * per pokemon
@@ -431,7 +430,6 @@ const validSearch = (queries) => {
 
   return true;
 };
-
 
 /**
  * Verifies Id and Range fall into valid Pokemon range
