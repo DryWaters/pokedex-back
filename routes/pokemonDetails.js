@@ -531,8 +531,6 @@ const getNavigation = (pokemonId) => {
  * @return {Object[]} parsed weaknesses that includes name and multiplier
  */
 const getWeaknesses = (types) => {
-  let type1;
-  let type2;
   const weakTypes = [];
 
   // Sort the types by slot to ensure order
@@ -540,16 +538,8 @@ const getWeaknesses = (types) => {
   types.sort((a, b) => (a.slot > b.slot) ? 1 :
     ((b.slot > a.slot) ? -1 : 0));
 
-  // if does not have two types, add type 0 for type_2
-  // (needed for query)
-  if (types.length === 1) {
-    type1 = types[0].type_id;
-    type2 = 0;
-  } else {
-    type1 = types[0].type_id;
-    type2 = types[1].type_id;
-  }
-  return database.db.any(sql.pokemonDetail.selectWeaknesses, {type1, type2})
+  return database.db.any(sql.pokemonDetail.selectWeaknesses,
+      {type1: types[0].type_id, type2: types[1].type_id} )
       .then((weaknesses) => {
         Object.keys(weaknesses[0]).forEach((col) => {
           if (weaknesses[0][col] > 1) {
