@@ -464,7 +464,8 @@ const isValidIdAndRange = ({id, range}) => {
  */
 const isValidTypes = (types) => {
   for (let type of types.split(',')) {
-    if (isNaN(type) || type < 1 || type > POKEMON.NUMBER_OF_TYPES) {
+    if (isNaN(type) || !/^\d+/.test(type) || type < 1 ||
+      type > POKEMON.NUMBER_OF_TYPES) {
       return false;
     }
   };
