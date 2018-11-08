@@ -2,30 +2,24 @@ require('dotenv').config();
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const utils = require('./database/utils');
-const pokemonAll = require('./routes/pokemonAll');
-const pokemonDetails = require('./routes/pokemonDetails');
 const rateLimit = require('express-rate-limit');
-const redis = require('redis');
 const favicon = require('serve-favicon');
 const cors = require('cors');
+
+const pokemonAll = require('./routes/pokemonAll');
+const pokemonDetails = require('./routes/pokemonDetails');
+const utils = require('./database/utils');
+const database = require('./database/db');
+const redis = require('./database/redis');
 const app = express();
 
-// if in production, enable caching and limiting.
-if (process.env.NODE_ENV === 'production') {
+app.enable('trust proxy'); // enable if using Heroku
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests every 15 minutes
+});
 
-  // will be used later for caching...
-  const client = redis.createClient(process.env.REDIS_URL);
-
-  app.enable('trust proxy'); // enable if using Heroku
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // 100 requests every 15 minutes
-  });
-
-  app.use(limiter);
-}
-
+app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -41,5 +35,19 @@ if (process.env.REBUILD_DATA && process.env.REBUILD_DATA === 'TRUE') {
       console.log('done setting up');
     });
 }
+
+// close database connections on exit
+const cleanup = () => {
+  if (database) {
+    database.pgp.end();
+  }
+  if (redis) {
+    redis.quit();
+  }
+  process.exit(1);
+}
+
+process.on('SIGINT', cleanup);
+process.on('SIGTERM', cleanup);
 
 module.exports = app;
