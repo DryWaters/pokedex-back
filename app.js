@@ -19,15 +19,15 @@ const limiter = rateLimit({
   max: 100, // 100 requests every 15 minutes
 });
 
-app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors());
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
+app.use('/pokemon/:id', limiter);
 app.use('/pokemon', pokemonAll);
-app.use('/pokemon/', pokemonDetails);
+app.use('/pokemon', pokemonDetails);
 
 if (process.env.REBUILD_DATA && process.env.REBUILD_DATA === 'TRUE') {
   utils.rebuildData()
@@ -37,7 +37,7 @@ if (process.env.REBUILD_DATA && process.env.REBUILD_DATA === 'TRUE') {
 }
 
 // close database connections on exit
-const cleanup = () => {
+const closeDBConnections = () => {
   if (database) {
     database.pgp.end();
   }
@@ -47,7 +47,7 @@ const cleanup = () => {
   process.exit(1);
 }
 
-process.on('SIGINT', cleanup);
-process.on('SIGTERM', cleanup);
+process.on('SIGINT', closeDBConnections);
+process.on('SIGTERM', closeDBConnections);
 
 module.exports = app;
