@@ -978,6 +978,60 @@ QUnit.test('Should fail on single weakness search (above max), ' +
 
 QUnit.module('Pokemon search by all search types');
 
+QUnit.test('Should return Pokemon for multiple weaknesses and single, ' +
+    'type search /pokemon?id=1&range=807&weaknesses=3,9&types=15',
+(assert) => {
+  const expectedResult = {
+    'pokemon': [
+      {
+        'id': 459,
+        'name': 'Snover',
+        'types': [
+          'grass',
+          'ice',
+        ],
+        'image_path': '/sprites/pokemon/large/459.png',
+      },
+      {
+        'id': 460,
+        'name': 'Abomasnow',
+        'types': [
+          'grass',
+          'ice',
+        ],
+        'image_path': '/sprites/pokemon/large/460.png',
+      },
+      {
+        'id': 740,
+        'name': 'Crabominable',
+        'types': [
+          'fighting',
+          'ice',
+        ],
+        'image_path': '/sprites/pokemon/large/740.png',
+      },
+    ],
+  };
+  const assertAsync = assert.async();
+  request(app)
+      .get('/pokemon?id=1&range=807&weaknesses=3,9&types=15')
+      .expect('Content-Type', /json/)
+      .expect('Content-Length', JSON.stringify(expectedResult)
+          .length.toString())
+      .expect(200)
+      .then((response) => {
+        assertAsync();
+        assert.deepEqual(response.body, expectedResult,
+            'JSON does not equal, actual: ' + response.body +
+            ' expected: ' + expectedResult);
+      })
+      .catch((error) => {
+        assertAsync();
+        assert.ok(false, 'FAIL /pokemon?id=1&range=807&weaknesses=3,9' +
+          '&types=15' + error);
+      });
+});
+
 QUnit.test('Should return Bulbasaur for multiple valid search, ' +
     '/pokemon?id=1&range=1&name=bulb&ability=over&types=4,12&weaknesses=3',
 (assert) => {

@@ -195,7 +195,7 @@ const buildQueryWeaknesses = (queryParams, query) => {
   if (query.types) {
     // if only searching by one type (from types search),
     // then add a second join to check second type
-    if (query.types.length === 1) {
+    if (query.types.split(',').length === 1) {
       queryParams.joins.push('pokemon_types pt1 ON p.pokemon_id' +
         ' = pt1.pokemon_id');
     }
@@ -398,7 +398,7 @@ const parsePokemonResults = (result) => {
  * @return {Boolean} True => Valid, False => At least one term fails check
  */
 const validSearch = (queries) => {
-  let keys = Object.keys(queries);
+  const keys = Object.keys(queries);
 
   // no search terms found...bad search
   if (keys.length === 0) {
@@ -419,7 +419,7 @@ const validSearch = (queries) => {
   // If key does not exist in valid query object
   // or validation function returns false
   // short circuit and return false
-  for (let query of keys) {
+  for (const query of keys) {
     if (!validQuery.hasOwnProperty(query) ||
       !validQuery[query]()) {
       return false;
@@ -461,7 +461,7 @@ const isValidIdAndRange = ({id, range}) => {
  * @return {Boolean} True => Valid/ False => Invalid search
  */
 const isValidTypes = (types) => {
-  for (let type of types.split(',')) {
+  for (const type of types.split(',')) {
     if (isNaN(type) || !/^\d+/.test(type) || type < 1 ||
       type > POKEMON.NUMBER_OF_TYPES) {
       return false;
