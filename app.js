@@ -20,7 +20,7 @@ const limiter = rateLimit({
 });
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(cors());
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
@@ -31,9 +31,9 @@ app.use('/pokemon', pokemonDetails);
 
 if (process.env.REBUILD_DATA && process.env.REBUILD_DATA === 'TRUE') {
   utils.rebuildData()
-    .then(() => {
-      console.log('done setting up');
-    });
+      .then(() => {
+        console.log('done setting up');
+      });
 }
 
 // close database connections on exit
@@ -45,7 +45,7 @@ const closeDBConnections = () => {
     redis.quit();
   }
   process.exit(1);
-}
+};
 
 process.on('SIGINT', closeDBConnections);
 process.on('SIGTERM', closeDBConnections);
