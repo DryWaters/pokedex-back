@@ -13,10 +13,10 @@ const database = require('./database/db');
 const redis = require('./database/redis');
 const app = express();
 
-app.enable('trust proxy'); // enable if using Heroku
+app.enable('trust proxy'); // enable because using Heroku
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // 100 requests every 15 minutes
+  max: 200, // 200 requests every 15 minutes
 });
 
 app.use(express.json());
@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(cors());
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
-app.use('/pokemon/:id', limiter);
+app.use('/pokemon', limiter);
 app.use('/pokemon', pokemonAll);
 app.use('/pokemon', pokemonDetails);
 
