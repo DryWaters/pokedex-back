@@ -6,9 +6,9 @@
 const express = require('express');
 const router = express.Router(); // eslint-disable-line new-cap
 const database = require('../database/db');
-const POKEMON = require('../constants/pokemonConstants');
 const sql = require('../database/sql');
-
+const redisClient = require('../database/redis');
+const POKEMON = require('../constants/pokemonConstants');
 
 /**
  * GET details on a specific Pokemon
@@ -27,7 +27,9 @@ const sql = require('../database/sql');
  * */
 router.get('/:id', (req, res) => {
   const pokemonId = parseInt(req.params.id);
-  if (isNaN(pokemonId) || pokemonId < 1 ||
+  if (
+    isNaN(pokemonId) ||
+    pokemonId < 1 ||
     pokemonId > POKEMON.NUMBER_OF_POKEMON
   ) {
     return res.status(404)
@@ -39,8 +41,21 @@ router.get('/:id', (req, res) => {
         });
   }
 
-  // Have a valid pokemon ID, get detailed data
-  database.db.any(sql.pokemonDetail.selectAllFormsAndEvolutions, {pokemonId})
+  // Check cache if Details already exist
+  return redisClient.get(req.originalUrl)
+      .then((result) => {
+        if (result) {
+          return res.status(200).json(JSON.parse(result));
+        } else {
+          return getPokemonDetails(pokemonId, req, res);
+        }
+      });
+});
+
+const getPokemonDetails = (pokemonId, req, res) => {
+  // Was not found in cache, get detailed data
+  return database.db.any(
+      sql.pokemonDetail.selectAllFormsAndEvolutions, {pokemonId})
 
       // Then get all unique forms and evolutions for the particular pokemon
       .then((result) => {
@@ -78,21 +93,22 @@ router.get('/:id', (req, res) => {
 
       // Done getting data, now parse the data to expected return format
       .then((allData) => {
-        return res.status(200).json(parseData(allData));
+        const parsedJson = parseData(allData);
+        redisClient.set(req.originalUrl, JSON.stringify(parsedJson));
+        return res.status(200).json(parsedJson);
       })
 
       // failed when trying to get individual
       // details either main id, forms, or evolutions
       .catch((err) => {
-        console.error('Unable to get pokemon data, oops with error: '
-      + err);
+        console.error('Unable to get pokemon data, error:' + err);
         return res.status(404).json({
           'errorCode': 404,
           'error': 'Unable to get pokemon details data!',
           'errorMessage': err,
         });
       });
-});
+};
 
 /**
  * Parses all the Promise data that is returned from each part of the
@@ -539,7 +555,7 @@ const getWeaknesses = (types) => {
     ((b.slot > a.slot) ? -1 : 0));
 
   return database.db.any(sql.pokemonDetail.selectWeaknesses,
-      {type1: types[0].type_id, type2: types[1].type_id} )
+      {type1: types[0].type_id, type2: types[1].type_id})
       .then((weaknesses) => {
         Object.keys(weaknesses[0]).forEach((col) => {
           if (weaknesses[0][col] > 1) {
