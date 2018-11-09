@@ -8,6 +8,7 @@ const router = express.Router(); // eslint-disable-line new-cap
 const database = require('../database/db');
 const POKEMON = require('../constants/pokemonConstants');
 const sql = require('../database/sql');
+const redisClient = require('../database/redis');
 
 /**
  * GET array of Pokemon from a search
@@ -50,7 +51,21 @@ router.get('/', (req, res) => {
         });
   }
 
-  new Promise((resolve) => resolve())
+  const key = createLookupKey(req.query);
+
+  // Check cache if search already exist
+  return redisClient.get(key)
+      .then((result) => {
+        if (result) {
+          return res.status(200).json(JSON.parse(result));
+        } else {
+          return getPokemon(key, req, res);
+        }
+      });
+});
+
+const getPokemon = (key, req, res) => {
+  return new Promise((resolve) => resolve())
       .then(() => {
         // If user wants to search by weakness, then get all types that
         // are weak to that searched weakness(es)
@@ -84,7 +99,11 @@ router.get('/', (req, res) => {
         }
       })
       // return parsed results to front end
-      .then((result) => res.status(200).json(parsePokemonResults(result)))
+      .then((result) => {
+        const parsedJson = parsePokemonResults(result);
+        redisClient.set(key, JSON.stringify(parsedJson));
+        res.status(200).json(parsedJson);
+      })
 
       // Error in one of the database queries.
       .catch((error) => {
@@ -101,7 +120,29 @@ router.get('/', (req, res) => {
               },
             });
       });
-});
+};
+
+/**
+ * Takes params and creates a standard lookup key because
+ * order of the params can be different, but return same data
+ * Order is (alphabetically):
+ * /pokemon:ability=:id=:name=:range=:types=:weaknesses=
+ * Multiple keys like types and weaknesses are sorted before
+ * appending to string
+ * @param {Object} query params from request
+ * @return {String} key used to save and lookup from cache
+ */
+const createLookupKey = (query) => {
+  let key = '/pokemon';
+  key += Object.keys(query).sort().map((searchTerm) => {
+    if (searchTerm === 'types' || searchTerm === 'weaknesses') {
+      return `:${searchTerm}=${query[searchTerm].split(',').sort().join(',')}`;
+    } else {
+      return `:${searchTerm}=${query[searchTerm]}`;
+    }
+  }).join('');
+  return key;
+};
 
 /**
  * Creates a SQL query to search for the weaknesses the user is looking for
@@ -422,6 +463,7 @@ const validSearch = (queries) => {
   // short circuit and return false
   for (const query of keys) {
     if (!validQuery.hasOwnProperty(query) ||
+      (typeof queries[query] !== 'string') ||
       !validQuery[query]()) {
       return false;
     }
