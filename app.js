@@ -10,7 +10,7 @@ const pokemonAll = require('./routes/pokemonAll');
 const pokemonDetails = require('./routes/pokemonDetails');
 const utils = require('./database/utils');
 const database = require('./database/db');
-const redis = require('./database/redis');
+const redisClient = require('./database/redis');
 const app = express();
 
 app.enable('trust proxy'); // enable because using Heroku
@@ -49,8 +49,8 @@ const closeDBConnections = () => {
   if (database) {
     database.pgp.end();
   }
-  if (redis) {
-    redis.quit();
+  if (redisClient) {
+    redisClient.disconnect();
   }
   process.exit(1);
 };
