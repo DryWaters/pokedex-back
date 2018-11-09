@@ -6,11 +6,12 @@ const POKEMON = require('../../constants/pokemonConstants');
 const errorResult = {
   'error': 'Invalid search',
   'valid search queries': {
-    'id': '1-807',
-    'range': '(id + range - 1) < 807',
+    'id': `1-${POKEMON.NUMBER_OF_POKEMON}`,
+    'range': `(id + range - 1) < ${POKEMON.NUMBER_OF_POKEMON}`,
     'name': 'Not empty',
-    'types': '1-18, 1-18',
+    'types': '1-18, [1-18] (Optional)',
     'ability': 'Not empty',
+    'weaknesses': '1-18, [1-18]* (Optional)',
   },
 };
 

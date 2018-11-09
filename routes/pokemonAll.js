@@ -43,8 +43,9 @@ router.get('/', (req, res) => {
             'id': `1-${POKEMON.NUMBER_OF_POKEMON}`,
             'range': `(id + range - 1) < ${POKEMON.NUMBER_OF_POKEMON}`,
             'name': 'Not empty',
-            'types': '1-18, 1-18',
+            'types': '1-18, [1-18] (Optional)',
             'ability': 'Not empty',
+            'weaknesses': '1-18, [1-18]* (Optional)',
           },
         });
   }
