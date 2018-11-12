@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const favicon = require('serve-favicon');
 const cors = require('cors');
+const path = require('path');
 
 const pokemonAll = require('./routes/pokemonAll');
 const pokemonDetails = require('./routes/pokemonDetails');
@@ -29,6 +30,7 @@ const limiter = rateLimit({
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.use(cors());
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
