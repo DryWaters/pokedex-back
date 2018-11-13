@@ -17,16 +17,18 @@ const app = express();
 app.enable('trust proxy'); // enable because using Heroku
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // 200 requests every 15 minutes
+  max: 1, // 200 requests every 15 minutes
   handler: (req, res) => {
     const timeTillReset = Math.round(
         (req.rateLimit.resetTime - new Date()) / 1000);
     return res.status(429)
         .json({
-          'error': 'Too many requests.  Please ' +
-            'try again in ' + timeTillReset + ' seconds.'});
-  },
-});
+          'error': {
+            'message': 'Too many requests.  Please ' +
+            'try again in ' + timeTillReset + ' seconds.',
+          },
+        });
+  }});
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
