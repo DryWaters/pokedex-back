@@ -1,11 +1,10 @@
 # Pokedex Backend API Project
-Pokedex Backend API Node/Express application that uses PostGres and Redis 
-database to serve Pokemon data that can be used with the frontend companion
-React application for retrieving information on Pokemon 1-807.
+Pokedex Backend API Node/Express application that uses Postgres and Redis (for
+caching) database to serve Pokemon data that can be used with the frontend 
+companion React application for retrieving information on Pokemon 1-807.
 
 The project was one half of the end of the year CS 160 (Software Engineering)
 project.
-
 
 * [Instructions](#instructions)
 * [Getting Started](#getting-started)
