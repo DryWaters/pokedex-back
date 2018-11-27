@@ -6,7 +6,7 @@ const NUMBER_OF_EVOLUTIONS = 293;
 const NUMBER_OF_DAMAGE_TYPES = 324;
 const NUMBER_OF_ABILITIES = 292;
 const TOTAL_POKEMON_WITH_TYPES = 2044;
-const TOTAL_POKEMON_WITH_ABILS = 2329;
+const TOTAL_POKEMON_WITH_ABILS = 2330;
 const SPRITE_PATH = '/sprites/pokemon/';
 const TYPE_LOOKUP = ['', 'normal', 'fighting', 'flying', 'poison',
   'ground', 'rock', 'bug', 'ghost', 'steel', 'fire', 'water', 'grass',
