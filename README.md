@@ -89,5 +89,5 @@ https://documenter.getpostman.com/view/5517807/RzZFBvca
 ## Authors
 [Daniel Waters](https://www.watersjournal.com)
 
-[Hovsep Lalikian](mailto:hovsep.lalikian@sjsu.edu)
+[Hovsep Lalikian](https://github.com/Hovspian)
 
