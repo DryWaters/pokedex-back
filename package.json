@@ -21,7 +21,7 @@
     "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
-    "async": "^2.6.1",
+    "async": "^2.6.4",
     "eslint": "^5.9.0",
     "eslint-config-google": "^0.11.0",
     "nodemon": "^1.18.7",
